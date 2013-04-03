@@ -1,4 +1,0 @@
-StrokeApp
-=========
-
-Aplikasi terapi stroke
