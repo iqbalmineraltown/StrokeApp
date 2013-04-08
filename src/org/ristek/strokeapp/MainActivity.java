@@ -57,7 +57,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	@Override
+	//@Override
 	public EngineOptions onCreateEngineOptions() {
 		this.mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		final RatioResolutionPolicy resolutionPolicy = new RatioResolutionPolicy(
