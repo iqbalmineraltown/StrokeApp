@@ -1,19 +1,22 @@
 package org.ristek.strokeapp;
 
+import java.io.IOException;
+
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
-import org.andengine.entity.scene.menu.MenuScene;
-import org.andengine.entity.scene.menu.item.TextMenuItem;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
@@ -35,7 +38,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 	protected static final int MENU_HIGH_SCORE = 2;
 	protected static final int MENU_STROKE_FACT = 3;
 	protected static final int MENU_OPTIONS = 4;
-	
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -44,6 +47,8 @@ public class MainActivity extends SimpleBaseGameActivity {
 	protected Scene mMenuScene;
 
 	private Font mFont;
+	
+	private Music bgMusic;
 
 	// ===========================================================
 	// Constructors
@@ -63,16 +68,27 @@ public class MainActivity extends SimpleBaseGameActivity {
 		final RatioResolutionPolicy resolutionPolicy = new RatioResolutionPolicy(
 				CAMERA_WIDTH, CAMERA_HEIGHT);
 
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
-				resolutionPolicy, mCamera);
+		EngineOptions engineOption = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
+				resolutionPolicy, mCamera); 
+		engineOption.getAudioOptions().setNeedsMusic(true);
+		
+		return engineOption;
 	}
 
 	@Override
 	protected void onCreateResources() {
 		this.mFont = FontFactory.create(this.getFontManager(),
 				this.getTextureManager(), 256, 256,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA,
 				Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
 		this.mFont.load();
+		try {
+			bgMusic = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this, "music/test-music.ogg");
+			bgMusic.setLooping(true);
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -80,7 +96,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
 		mMenuScene = this.createMenuScene();
-
+		bgMusic.play();
 		return mMenuScene;
 	}
 
@@ -95,30 +111,23 @@ public class MainActivity extends SimpleBaseGameActivity {
 		final VertexBufferObjectManager VBOManager = this
 				.getVertexBufferObjectManager();
 
-		
 		final Text titleText = new Text(100, 40, this.mFont, "Stroke Game",
 				new TextOptions(HorizontalAlign.LEFT), VBOManager);
-		
-		final String[] menuText = {"Start","Time Trial","High Score","Stroke Fact","Options"};
-		
+
+		final String[] menuText = { "Start", "Time Trial", "High Score",
+				"Stroke Fact", "Options" };
+
 		final Text[] menuItem = new Text[menuText.length];
-		
+
 		for (int i = 0; i < menuItem.length; i++) {
-			menuItem[i] = new Text(100,100+(i*40),this.mFont,menuText[i],VBOManager){
-				@Override
-				public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-						float pTouchAreaLocalX, float pTouchAreaLocalY) {
-					System.out.println(this.getText()+" ditekan!");
-					return super
-							.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-				}
-			};
+			menuItem[i] = new Text(100, 100 + (i * 40), this.mFont,
+					menuText[i], VBOManager);
 			menuScene.attachChild(menuItem[i]);
 			menuScene.registerTouchArea(menuItem[i]);
 		}
-		
+
 		menuScene.attachChild(titleText);
-		
+
 		return menuScene;
 	}
 
