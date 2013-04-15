@@ -22,6 +22,7 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 
 public class MainActivity extends SimpleBaseGameActivity {
@@ -47,7 +48,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 	protected Scene mMenuScene;
 
 	private Font mFont;
-	
+
 	private Music bgMusic;
 
 	// ===========================================================
@@ -68,10 +69,10 @@ public class MainActivity extends SimpleBaseGameActivity {
 		final RatioResolutionPolicy resolutionPolicy = new RatioResolutionPolicy(
 				CAMERA_WIDTH, CAMERA_HEIGHT);
 
-		EngineOptions engineOption = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
-				resolutionPolicy, mCamera); 
+		EngineOptions engineOption = new EngineOptions(true,
+				ScreenOrientation.LANDSCAPE_FIXED, resolutionPolicy, mCamera);
 		engineOption.getAudioOptions().setNeedsMusic(true);
-		
+
 		return engineOption;
 	}
 
@@ -83,10 +84,10 @@ public class MainActivity extends SimpleBaseGameActivity {
 				Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
 		this.mFont.load();
 		try {
-			bgMusic = MusicFactory.createMusicFromAsset(mEngine.getMusicManager(), this, "music/test-music.ogg");
+			bgMusic = MusicFactory.createMusicFromAsset(
+					mEngine.getMusicManager(), this, "music/test-music.ogg");
 			bgMusic.setLooping(true);
-		}
-		catch(IOException e){
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -95,8 +96,10 @@ public class MainActivity extends SimpleBaseGameActivity {
 	protected Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		mMenuScene = this.createMenuScene();
-		bgMusic.play();
+		mMenuScene = new MainMenuScene();
+		if (getSharedPreferences("StrokeAppOptions", MODE_PRIVATE).getBoolean(
+				"MusicOn", true))
+			bgMusic.play();
 		return mMenuScene;
 	}
 
@@ -104,35 +107,64 @@ public class MainActivity extends SimpleBaseGameActivity {
 	// Methods
 	// ===========================================================
 
-	public Scene createMenuScene() {
-		final Scene menuScene = new Scene();
-		menuScene.setBackground(new Background(Color.WHITE));
-
-		final VertexBufferObjectManager VBOManager = this
-				.getVertexBufferObjectManager();
-
-		final Text titleText = new Text(100, 40, this.mFont, "Stroke Game",
-				new TextOptions(HorizontalAlign.LEFT), VBOManager);
-
-		final String[] menuText = { "Start", "Time Trial", "High Score",
-				"Stroke Fact", "Options" };
-
-		final Text[] menuItem = new Text[menuText.length];
-
-		for (int i = 0; i < menuItem.length; i++) {
-			menuItem[i] = new Text(100, 100 + (i * 40), this.mFont,
-					menuText[i], VBOManager);
-			menuScene.attachChild(menuItem[i]);
-			menuScene.registerTouchArea(menuItem[i]);
-		}
-
-		menuScene.attachChild(titleText);
-
-		return menuScene;
-	}
-
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+
+	class MainMenuScene extends Scene {
+		final Text[] menuItem;
+		
+		public MainMenuScene() {
+			this.setBackground(new Background(Color.WHITE));
+
+			final VertexBufferObjectManager VBOManager = MainActivity.this
+					.getVertexBufferObjectManager();
+
+			final Text titleText = new Text(100, 40, mFont, "Stroke App",
+					new TextOptions(HorizontalAlign.LEFT), VBOManager);
+
+			final String[] menuText = { "Start", "Time Trial", "High Score",
+					"Stroke Fact", "Options" };
+			menuItem = new Text[menuText.length];
+
+			for (int i = 0; i < menuItem.length; i++) {
+				menuItem[i] = new Text(100, 100 + (i * 40), mFont, menuText[i],
+						VBOManager);
+
+				this.attachChild(menuItem[i]);
+				this.registerTouchArea(menuItem[i]);
+			}
+			this.attachChild(titleText);
+		}
+		
+		@Override
+		public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
+			if(pSceneTouchEvent.isActionDown()){
+				for (int i = 0; i < menuItem.length; i++) {
+					if(menuItem[i].contains(pSceneTouchEvent.getX(), pSceneTouchEvent.getY())){
+						if(i==MENU_START){
+							Intent intent = new Intent(MainActivity.this, LevelSelector.class);
+							startActivity(intent);
+						}
+						else if (i==MENU_TIME_TRIAL){
+							
+						}
+						else if (i==MENU_HIGH_SCORE){
+							Intent intent = new Intent(MainActivity.this, HighScoreScreen.class);
+							startActivity(intent);
+						}
+						else if (i==MENU_STROKE_FACT){
+							Intent intent = new Intent(MainActivity.this, StrokeFact.class);
+							startActivity(intent);
+						} 
+						else if (i==MENU_OPTIONS){
+							
+						}
+					}
+				}
+			}
+			return true;
+		}
+	}
 
 }
