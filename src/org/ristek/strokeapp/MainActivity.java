@@ -8,6 +8,7 @@ import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.text.Text;
@@ -23,6 +24,7 @@ import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
 
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
 
 public class MainActivity extends SimpleBaseGameActivity {
@@ -98,7 +100,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 		mMenuScene = new MainMenuScene();
 		if (getSharedPreferences("StrokeAppOptions", MODE_PRIVATE).getBoolean(
-				"MusicOn", true))
+				"SoundOn", true))
 			bgMusic.play();
 		return mMenuScene;
 	}
@@ -113,7 +115,8 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 	class MainMenuScene extends Scene {
 		final Text[] menuItem;
-		
+		final OptionsScene optionScene;
+
 		public MainMenuScene() {
 			this.setBackground(new Background(Color.WHITE));
 
@@ -135,32 +138,104 @@ public class MainActivity extends SimpleBaseGameActivity {
 				this.registerTouchArea(menuItem[i]);
 			}
 			this.attachChild(titleText);
+
+			optionScene = new OptionsScene();
 		}
-		
+
 		@Override
 		public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
-			if(pSceneTouchEvent.isActionDown()){
+			if (hasChildScene()) {
+				getChildScene().onSceneTouchEvent(pSceneTouchEvent);
+			} else if (pSceneTouchEvent.isActionDown()) {
 				for (int i = 0; i < menuItem.length; i++) {
-					if(menuItem[i].contains(pSceneTouchEvent.getX(), pSceneTouchEvent.getY())){
-						if(i==MENU_START){
-							Intent intent = new Intent(MainActivity.this, LevelSelector.class);
+					if (menuItem[i].contains(pSceneTouchEvent.getX(),
+							pSceneTouchEvent.getY())) {
+						if (i == MENU_START) {
+							Intent intent = new Intent(MainActivity.this,
+									LevelSelector.class);
 							startActivity(intent);
-						}
-						else if (i==MENU_TIME_TRIAL){
-							
-						}
-						else if (i==MENU_HIGH_SCORE){
-							Intent intent = new Intent(MainActivity.this, HighScoreScreen.class);
+						} else if (i == MENU_TIME_TRIAL) {
+							// TODO Time Trial
+						} else if (i == MENU_HIGH_SCORE) {
+							Intent intent = new Intent(MainActivity.this,
+									HighScoreScreen.class);
 							startActivity(intent);
-						}
-						else if (i==MENU_STROKE_FACT){
-							Intent intent = new Intent(MainActivity.this, StrokeFact.class);
+						} else if (i == MENU_STROKE_FACT) {
+							Intent intent = new Intent(MainActivity.this,
+									StrokeFact.class);
 							startActivity(intent);
-						} 
-						else if (i==MENU_OPTIONS){
-							
+						} else if (i == MENU_OPTIONS) {
+							this.setChildScene(optionScene);
 						}
 					}
+				}
+			}
+
+			return true;
+		}
+
+	}
+
+	class OptionsScene extends Scene {
+		final Text soundOption;
+		final Text backButton;
+
+		public OptionsScene() {
+			this.setBackgroundEnabled(false);
+
+			final VertexBufferObjectManager VBOManager = MainActivity.this
+					.getVertexBufferObjectManager();
+
+			final Rectangle bg = new Rectangle(50, 100, 500, 280, VBOManager);
+			bg.setColor(0.7f, 0.7f, 0.7f, 0.95f);
+
+			final Text titleText = new Text(100, 140, mFont, "Options",
+					new TextOptions(HorizontalAlign.LEFT), VBOManager);
+
+			soundOption = new Text(100, 200, mFont, "Sound : ---",
+					new TextOptions(HorizontalAlign.LEFT), VBOManager);
+			soundOption.setText(("Sound : " + ((getSharedPreferences(
+					"StrokeAppOptions", MODE_PRIVATE).getBoolean("SoundOn",
+					true)) ? "ON" : "OFF")));
+
+			backButton = new Text(100, 260, mFont, "Back to Menu",
+					new TextOptions(HorizontalAlign.LEFT), VBOManager);
+
+			this.attachChild(bg);
+			this.attachChild(titleText);
+			this.attachChild(soundOption);
+			this.attachChild(backButton);
+			this.registerTouchArea(soundOption);
+			this.registerTouchArea(backButton);
+		}
+
+		@Override
+		public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
+			if (pSceneTouchEvent.isActionDown()) {
+				if (soundOption.contains(pSceneTouchEvent.getX(),
+						pSceneTouchEvent.getY())) {
+					boolean isSoundOn = getSharedPreferences(
+							"StrokeAppOptions", MODE_PRIVATE).getBoolean(
+							"SoundOn", true);
+					Editor edit = getSharedPreferences("StrokeAppOptions",
+							MODE_PRIVATE).edit();
+					edit.putBoolean("SoundOn", !isSoundOn);
+					edit.commit();
+					if(getSharedPreferences(
+							"StrokeAppOptions", MODE_PRIVATE).getBoolean(
+							"SoundOn", true)){
+						soundOption.setText("Sound : ON");
+						bgMusic.play();
+					}
+					else{
+						soundOption.setText("Sound : OFF");
+						bgMusic.stop();
+					}
+
+				}
+				if (backButton.contains(pSceneTouchEvent.getX(),
+						pSceneTouchEvent.getY())) {
+					this.back();
 				}
 			}
 			return true;
