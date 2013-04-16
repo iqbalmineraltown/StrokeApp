@@ -145,7 +145,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 		@Override
 		public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
 			if (hasChildScene()) {
-				getChildScene().onSceneTouchEvent(pSceneTouchEvent);
+				optionScene.onSceneTouchEvent(pSceneTouchEvent);
 			} else if (pSceneTouchEvent.isActionDown()) {
 				for (int i = 0; i < menuItem.length; i++) {
 					if (menuItem[i].contains(pSceneTouchEvent.getX(),
@@ -179,14 +179,15 @@ public class MainActivity extends SimpleBaseGameActivity {
 	class OptionsScene extends Scene {
 		final Text soundOption;
 		final Text backButton;
-
+		final Rectangle bg;
+		
 		public OptionsScene() {
 			this.setBackgroundEnabled(false);
 
 			final VertexBufferObjectManager VBOManager = MainActivity.this
 					.getVertexBufferObjectManager();
 
-			final Rectangle bg = new Rectangle(50, 100, 500, 280, VBOManager);
+			bg = new Rectangle(50, 100, 500, 280, VBOManager);
 			bg.setColor(0.7f, 0.7f, 0.7f, 0.95f);
 
 			final Text titleText = new Text(100, 140, mFont, "Options",
@@ -229,7 +230,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 					}
 					else{
 						soundOption.setText("Sound : OFF");
-						bgMusic.stop();
+						bgMusic.pause();
 					}
 
 				}

@@ -11,6 +11,7 @@ import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.util.FPSLogger;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
@@ -39,6 +40,7 @@ public class LevelSelector extends SimpleBaseGameActivity{
 	
 	protected Camera mCamera;
 	protected Rectangle mMap;
+	protected Rectangle[] arrRect;
 	protected Scene mMainScene;
 	protected Text mText;
 	protected Font mFont;
@@ -71,17 +73,48 @@ public class LevelSelector extends SimpleBaseGameActivity{
 		
 		float pX = mCamera.getWidth();
 		float pY = mCamera.getHeight();
-		mMainScene = new Scene();
+		mMainScene = new Scene(){
+			int selection = -1;
+			@Override
+			public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
+				float pX = pSceneTouchEvent.getX();
+				float pY = pSceneTouchEvent.getY();
+				if(pSceneTouchEvent.isActionDown()){
+					for (int i = 0; i < arrRect.length; i++) {
+						if(arrRect[i].contains(pX, pY)){
+							selection = i;
+						}
+					}
+					for (int i = 0; i < arrRect.length; i++) {
+						if(i==selection){
+							arrRect[i].setColor(1, 0, 0);
+						} else {
+							arrRect[i].setColor(0, 0, 0);
+						}
+					}
+				}
+				return super.onSceneTouchEvent(pSceneTouchEvent);
+			}
+		};
 		mMainScene.setBackground(new Background(Color.BLUE, CAMERA_HEIGHT, CAMERA_WIDTH));
 		
 
 		mMap = new Rectangle(pX/8,pY/8, 3*pX/4, 3*pY/4, getVertexBufferObjectManager());
 		mMap.setColor(100,100,100);
 		
+		arrRect = new Rectangle[3];
+		arrRect[0] = new Rectangle(100,100, 50, 50, getVertexBufferObjectManager());
+		arrRect[1] = new Rectangle(200,200, 50, 50, getVertexBufferObjectManager());
+		arrRect[2] = new Rectangle(300,300, 50, 50, getVertexBufferObjectManager());
 		
 		mText = new Text(pX/8, pY/8, this.mFont, "Select Level",new TextOptions(HorizontalAlign.LEFT), getVertexBufferObjectManager());
 		mMainScene.attachChild(mMap);
 		mMainScene.attachChild(mText);
+		for (int i = 0; i < arrRect.length; i++) {
+			arrRect[i].setColor(0, 0, 0);
+			mMainScene.attachChild(arrRect[i]);
+			mMainScene.registerTouchArea(arrRect[i]);
+		}
 		return mMainScene;
 	}
 

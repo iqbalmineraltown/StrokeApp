@@ -92,7 +92,7 @@ public class HighScoreScreen extends SimpleBaseGameActivity{
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				// TODO Auto-generated method stub
+				finish();
 				
 				return true;
 			}
