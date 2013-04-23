@@ -23,7 +23,7 @@
         </activity>
         <activity android:name="LevelSelector"></activity>
         <activity android:name="HighScoreScreen"></activity>
-        <activity android:name="StrokeFact" android:label="Stroke Fact"></activity>
+        <activity android:name="StrokeFact" android:label="Kisah Inspiratif"></activity>
     </application>
 
 </manifest>
