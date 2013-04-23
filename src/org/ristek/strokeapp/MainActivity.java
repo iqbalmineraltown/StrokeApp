@@ -10,7 +10,9 @@ import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.scene.background.SpriteBackground;
+import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.sprite.TiledSprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.util.FPSLogger;
@@ -18,10 +20,20 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.TextureOptions;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
+import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
+import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
+import org.andengine.util.debug.Debug;
 
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
@@ -38,9 +50,12 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 	protected static final int MENU_START = 0;
 	protected static final int MENU_TIME_TRIAL = 1;
-	protected static final int MENU_HIGH_SCORE = 2;
-	protected static final int MENU_STROKE_FACT = 3;
-	protected static final int MENU_OPTIONS = 4;
+	protected static final int MENU_OPTIONS = 2;
+	protected static final int MENU_STROKE_STORY = 3;
+	protected static final int MENU_HIGH_SCORE = 4;
+	protected static final int MENU_SUM = 5;
+	protected static final String[] MENU_FILE = { "b-start.png", "b-time.png",
+		"b-opsi.png", "b-cerita.png","b-hiscore.png"  };
 
 	// ===========================================================
 	// Fields
@@ -52,6 +67,10 @@ public class MainActivity extends SimpleBaseGameActivity {
 	private Font mFont;
 
 	private Music bgMusic;
+
+	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
+	private ITextureRegion mBackTextureRegion;
+	private ITiledTextureRegion[] mButtonTextureRegion;
 
 	// ===========================================================
 	// Constructors
@@ -80,11 +99,37 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 	@Override
 	protected void onCreateResources() {
+		// Load Font
 		this.mFont = FontFactory.create(this.getFontManager(),
 				this.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA,
 				Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32);
 		this.mFont.load();
+
+		// Load Images
+		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+				this.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mBitmapTextureAtlas, this,
+						"images/l-bg.png");
+		this.mButtonTextureRegion = new ITiledTextureRegion[MENU_SUM];
+		for (int i = 0; i < mButtonTextureRegion.length; i++) {
+			mButtonTextureRegion[i] = BitmapTextureAtlasTextureRegionFactory
+					.createTiledFromAsset(this.mBitmapTextureAtlas, this,
+							"images/" + MENU_FILE[i], 2, 1);
+		}
+
+		try {
+			this.mBitmapTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 0, 1));
+			this.mBitmapTextureAtlas.load();
+		} catch (TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
+
+		// Load Music
 		try {
 			bgMusic = MusicFactory.createMusicFromAsset(
 					mEngine.getMusicManager(), this, "music/test-music.ogg");
@@ -114,31 +159,27 @@ public class MainActivity extends SimpleBaseGameActivity {
 	// ===========================================================
 
 	class MainMenuScene extends Scene {
-		final Text[] menuItem;
+		final int[] BUTTON_X = { 230, 447, 150, 310, 550 };
+		final int[] BUTTON_Y = { 265, 270, 360, 350, 360 };
+		final TiledSprite[] menuButtons;
 		final OptionsScene optionScene;
 
 		public MainMenuScene() {
-			this.setBackground(new Background(Color.WHITE));
+			this.setBackground(new SpriteBackground(new Sprite(0, 0,
+					mBackTextureRegion, getVertexBufferObjectManager())));
 
 			final VertexBufferObjectManager VBOManager = MainActivity.this
 					.getVertexBufferObjectManager();
 
-			final Text titleText = new Text(100, 40, mFont, "Stroke App",
-					new TextOptions(HorizontalAlign.LEFT), VBOManager);
+			menuButtons = new TiledSprite[MENU_SUM];
 
-			final String[] menuText = { "Start", "Time Trial", "High Score",
-					"Stroke Fact", "Options" };
-			menuItem = new Text[menuText.length];
+			for (int i = 0; i < menuButtons.length; i++) {
+				menuButtons[i] = new TiledSprite(BUTTON_X[i], BUTTON_Y[i],
+						mButtonTextureRegion[i], VBOManager);
 
-			for (int i = 0; i < menuItem.length; i++) {
-				menuItem[i] = new Text(100, 100 + (i * 40), mFont, menuText[i],
-						VBOManager);
-
-				this.attachChild(menuItem[i]);
-				this.registerTouchArea(menuItem[i]);
+				this.attachChild(menuButtons[i]);
+				this.registerTouchArea(menuButtons[i]);
 			}
-			this.attachChild(titleText);
-
 			optionScene = new OptionsScene();
 		}
 
@@ -147,8 +188,8 @@ public class MainActivity extends SimpleBaseGameActivity {
 			if (hasChildScene()) {
 				optionScene.onSceneTouchEvent(pSceneTouchEvent);
 			} else if (pSceneTouchEvent.isActionDown()) {
-				for (int i = 0; i < menuItem.length; i++) {
-					if (menuItem[i].contains(pSceneTouchEvent.getX(),
+				for (int i = 0; i < menuButtons.length; i++) {
+					if (menuButtons[i].contains(pSceneTouchEvent.getX(),
 							pSceneTouchEvent.getY())) {
 						if (i == MENU_START) {
 							Intent intent = new Intent(MainActivity.this,
@@ -160,7 +201,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 							Intent intent = new Intent(MainActivity.this,
 									HighScoreScreen.class);
 							startActivity(intent);
-						} else if (i == MENU_STROKE_FACT) {
+						} else if (i == MENU_STROKE_STORY) {
 							Intent intent = new Intent(MainActivity.this,
 									StrokeFact.class);
 							startActivity(intent);
@@ -180,7 +221,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 		final Text soundOption;
 		final Text backButton;
 		final Rectangle bg;
-		
+
 		public OptionsScene() {
 			this.setBackgroundEnabled(false);
 
@@ -222,13 +263,11 @@ public class MainActivity extends SimpleBaseGameActivity {
 							MODE_PRIVATE).edit();
 					edit.putBoolean("SoundOn", !isSoundOn);
 					edit.commit();
-					if(getSharedPreferences(
-							"StrokeAppOptions", MODE_PRIVATE).getBoolean(
-							"SoundOn", true)){
+					if (getSharedPreferences("StrokeAppOptions", MODE_PRIVATE)
+							.getBoolean("SoundOn", true)) {
 						soundOption.setText("Sound : ON");
 						bgMusic.play();
-					}
-					else{
+					} else {
 						soundOption.setText("Sound : OFF");
 						bgMusic.pause();
 					}
