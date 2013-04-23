@@ -19,7 +19,7 @@ public class StrokeFact extends Activity {
 		MyPagerAdapter adapter = new MyPagerAdapter();
 	    ViewPager myPager = (ViewPager) findViewById(R.id.myfivepanelpager);
 	    myPager.setAdapter(adapter);
-	    myPager.setCurrentItem(2);
+	    myPager.setCurrentItem(0);
 	}
 
 	@Override
@@ -41,16 +41,16 @@ class MyPagerAdapter extends PagerAdapter {
         int resId = 0;
         switch (position) {
         case 0:
-            resId = R.layout.main;
+            resId = R.layout.story1;
             break;
         case 1:
-            resId = R.layout.main2;
+            resId = R.layout.story2;
             break;
         case 2:
-            resId = R.layout.main3;
+            resId = R.layout.story3;
             break;
         case 3:
-            resId = R.layout.main4;
+            resId = R.layout.story4;
             break;
         }
         View view = inflater.inflate(resId, null);

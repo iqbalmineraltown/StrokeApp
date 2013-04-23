@@ -4,5 +4,41 @@
     <string name="app_name">StrokeApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
+    <string name="story1_title">Adam Fontaine</string>
+    <string name="story1_content">Adam is setting his sights on the Paralympics. Adam Fontaine, 20, had a stroke at the age of seven. He\’s since become an international sporting champion.
+\”I was a normal active child in school until I was seven years old when I had my first stroke. A year later I suffered a second stroke. This left me unable to walk or use my left arm. I had to spend three months in hospital. I was allowed home but had to use a wheelchair. My father gave up his job to look after me.
+I was very determined to walk again – it took about eight months to learn to walk using splints. Dad put in a handrail to help me get up the stairs. I couldn\’t get in and out of the bath so we had to get a walk-in shower installed. I also had to have speech therapy to help me talk again.
+About three years after my strokes, I found a local disabled sports club, where I got interested in air rifle shooting. This helped me to build up my confidence and realise what I was capable of achieving.
+Since joining the sports club, I have represented Great Britain in swimming and shooting. I won a silver and bronze medal in my first-ever international shooting event. It was a really great feeling. I\’m now barely at home as I\’m training most of the time or competing with the British Paralympic shooting team. My big target now is to make it into the Paralympics for 2012.\” </string>
+    <string name="story1_tips">Adam’s Tip:\n
+\”Don\’t hide away thinking that you can\’t do anything. Get out there and find something you can do, and enjoy it.\”</string>
+    <string name="story2_title">Lafrance Gordon</string>
+    <string name="story2_content">Lafrance Gordon likes to learn new skills. Lafrance couldn’t climb the stairs when he first got home – but sheer determination helped him get there, and he didn’t stop at stairs… he’s gone on to climb mountains too.
+\”I had my stroke nine years ago when I was 41 and living with my partner and two children. I worked as a welder and music promoter. I started the first Ms Caribbean UK beauty contest and had played cricket for my local team for 25 years.
+When I first got back home it was awful. I felt isolated as I had to be downstairs. I remember creeping out of bed, putting my feet on the ground and trying to walk. I made it to the hallway and looked up the staircase. I knew with sheer determination I could get up there.
+I had a really good physiotherapist who worked with me for six months, took me to the gym and on my first walk. I wanted to walk to the cricket ground where I used to play. I practised every day and would go 10 yards, 20, 30 and then stop. I would try to stop less each time.
+Through the Stroke Association, I became involved in the Bristol Half Marathon and then went on to climb Pen Y Fan in the Brecon Beacons. I fell in love with the mountains and decided that would be my motivation to recover even more. In May 2008, I reached the summit of Snowdon.
+I have become a media volunteer for the Stroke Association and appeared on TV and radio. After a course in journalism, I began working on a radio station and now host a popular programme. I like to learn new skills.\”</string>
+    <string name="story2_tips">Lafrance’s Tip: \n
+\”Try to get out every day and set yourself little targets to achieve, for example, walking an extra 10 yards each day.\”</string>
+    <string name="story3_title">Claire O’Kane</string>
+    <string name="story3_content">Claire O’Kane and her mother, Ann, tell how looking after her daughter is helping Claire in her recovery.
+\”For me it was the day I could hold my little girl’s hand again.\”
+Claire: \”I was a full-time mother to three-year old daughter Caitlin when I had my stroke four years ago aged 26. Before I had my daughter, I had been having headaches but the doctor had diagnosed migraines. After my stroke, I was desperate to sleep in my bedroom rather than in the bed we’d put in the living room.\”
+Ann: \”She signed to us that she wanted to go upstairs, so we had one of us pushing from behind and another pulling her up. It wasn’t easy but we managed.\”
+Claire: \”Because I’ve got Caitlin, I had to get better so I could get her into a routine. I wanted to be normal again, whatever that is. I used to be right-handed but had to teach myself to be left-handed. I’m learning to write again but find it hard to read more than short paragraphs. Now I want to help other people to show them there is life after stroke
+I have lost nearly two stone in the last six months and have started jogging and boxing on my Wii. I also have a machine that stimulates my hand to help it open up. I can grasp but I can’t release anything – yet.\”
+Ann: \”The Stroke Association has been fantastic. We wouldn’t have sorted out the disability benefits without them and they helped to arrange the conversion of our downstairs toilet into a shower and organised a wheelchair. A woman from the Association comes round regularly and we know we can always ring her for advice.\”</string>
+    <string name="story3_tips">Claire’s Tip: \n
+\”There is light at the end of the tunnel. Take one day at a time and every day try to reach a goal, however small.\”</string>
+    <string name="story4_title">Michael Bell</string>
+    <string name="story4_content">Michael Bell has discovered a talent for art. Michael, 69, has had to learn to walk, speak, read and overcome the dread of going outdoors since having his stroke.
+\”Before I had my stroke, I was retired and would spend a lot of time helping my wife Christine, who has MS. After the stroke, I spent three months in hospital. I became very depressed. When I realised that I didn’t recognise the alphabet and couldn’t read, I became very frightened. I didn’t want to go outside of the hospital.
+I didn’t want my friends to visit. I was ashamed of being the way I was. I didn’t know what to say to them. I didn’t want to be cheered up. I only wanted my wife to see me.
+Occupational therapists started me on the road to recovery. Then I began physiotherapy. That was a big stepping stone as I thought I would never walk again. I was so pleased to go home. But my depression returned and I cried a lot.
+The Stroke Association gave me back my life. A lady came to see us to offer me things I could do without that I would still be sitting in my home. At first I was reluctant but my wife encouraged me. I started a communication class and an art class – I had never painted before my stroke. These classes made me feel there was a life after a stroke and gave me hope. I tried everything that was offered.
+Setting goals was important – simple tasks first, like walking down the path or reading simple words. Now I am no longer incontinent, can walk to the shop without a stick, recognise the paper I want and read the TV section. Life is good again.\”</string>
+    <string name="story4_tips">Michael’s Tip: \n
+\”You need to make constant efforts to reach the targets you have set yourself, and those that other people have set for you. Don’t be afraid to ask for help.\”</string>
 
 </resources>
