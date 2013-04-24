@@ -191,6 +191,14 @@ public class MainActivity extends SimpleBaseGameActivity {
 				for (int i = 0; i < menuButtons.length; i++) {
 					if (menuButtons[i].contains(pSceneTouchEvent.getX(),
 							pSceneTouchEvent.getY())) {
+						menuButtons[i].setCurrentTileIndex(1);
+					}
+				}
+			} else if (pSceneTouchEvent.isActionUp()) {
+				for (int i = 0; i < menuButtons.length; i++) {
+					if (menuButtons[i].contains(pSceneTouchEvent.getX(),
+							pSceneTouchEvent.getY()) && menuButtons[i].getCurrentTileIndex() == 1) {
+						
 						if (i == MENU_START) {
 							Intent intent = new Intent(MainActivity.this,
 									LevelSelector.class);
@@ -209,6 +217,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 							this.setChildScene(optionScene);
 						}
 					}
+					menuButtons[i].setCurrentTileIndex(0);
 				}
 			}
 
