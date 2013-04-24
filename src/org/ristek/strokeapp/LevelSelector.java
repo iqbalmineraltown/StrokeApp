@@ -17,6 +17,7 @@ import org.andengine.opengl.font.FontFactory;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
@@ -81,6 +82,11 @@ public class LevelSelector extends SimpleBaseGameActivity{
 				float pY = pSceneTouchEvent.getY();
 				if(pSceneTouchEvent.isActionDown()){
 					for (int i = 0; i < arrRect.length; i++) {
+						if(arrRect[i].contains(pX, pY) && selection == i){
+							Intent intent = new Intent(LevelSelector.this,
+									GestureActivity.class);
+							startActivity(intent);
+						}
 						if(arrRect[i].contains(pX, pY)){
 							selection = i;
 						}

@@ -40,5 +40,7 @@ The Stroke Association gave me back my life. A lady came to see us to offer me t
 Setting goals was important – simple tasks first, like walking down the path or reading simple words. Now I am no longer incontinent, can walk to the shop without a stick, recognise the paper I want and read the TV section. Life is good again.\”</string>
     <string name="story4_tips">Michael’s Tip: \n
 \”You need to make constant efforts to reach the targets you have set yourself, and those that other people have set for you. Don’t be afraid to ask for help.\”</string>
+    <string name="title_activity_gesture">GestureActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
