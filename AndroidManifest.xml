@@ -15,24 +15,27 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="org.ristek.strokeapp.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.ristek.strokeapp.LevelSelector" >
+        <activity android:name="org.ristek.strokeapp.LevelSelector" android:screenOrientation="landscape">
         </activity>
-        <activity android:name="org.ristek.strokeapp.HighScoreScreen" >
+        <activity android:name="org.ristek.strokeapp.HighScoreScreen" android:screenOrientation="landscape">
         </activity>
         <activity
             android:name="org.ristek.strokeapp.StrokeFact"
-            android:label="Kisah Inspiratif" >
+            android:label="Kisah Inspiratif"
+            android:screenOrientation="landscape">
         </activity>
         <activity
             android:name="org.ristek.strokeapp.GestureActivity"
-            android:label="@string/title_activity_gesture" >
+            android:label="@string/title_activity_gesture"
+            android:screenOrientation="landscape" >
         </activity>
     </application>
 
