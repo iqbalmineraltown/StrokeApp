@@ -42,5 +42,15 @@ Setting goals was important – simple tasks first, like walking down the path o
 \”You need to make constant efforts to reach the targets you have set yourself, and those that other people have set for you. Don’t be afraid to ask for help.\”</string>
     <string name="title_activity_gesture">GestureActivity</string>
     <string name="action_settings">Settings</string>
+    <string name="soal1">5, 7, 10, 12, 15, seri selanjutnya...</string>
+    <string name="soal2">1/16 = ... %</string>
+    <string name="soal3">suatu seri a, m, n, b, o, p, c, seri selanjutnya...</string>
+    <string name="soal1E">17</string>
+    <string name="_17">17</string>
+    <string name="_16">16</string>
+    <string name="_15">15</string>
+    <string name="_14">14</string>
+    <string name="_13">13</string>
+    <string name="_submit">Submit</string>
 
 </resources>
