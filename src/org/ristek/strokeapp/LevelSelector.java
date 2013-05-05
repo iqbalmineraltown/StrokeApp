@@ -34,7 +34,6 @@ public class LevelSelector extends SimpleBaseGameActivity{
 	private static final int CAMERA_WIDTH = 800;
 	private static final int CAMERA_HEIGHT = 480;
 		
-		
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -85,6 +84,7 @@ public class LevelSelector extends SimpleBaseGameActivity{
 						if(arrRect[i].contains(pX, pY) && selection == i){
 							Intent intent = new Intent(LevelSelector.this,
 									GestureActivity.class);
+							intent.putExtra("gestureName", "Ha");
 							startActivity(intent);
 						}
 						if(arrRect[i].contains(pX, pY)){
