@@ -9,6 +9,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -20,18 +22,27 @@ public class Questions extends Activity {
 	private Button rb;
 	private RadioGroup rg;
 	private RadioButton rbb;
+	private ViewPager myPager;
+	private MyQPagerAdapter adapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		/* remove title bar and notification bar */
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		/* end remove title bar and notification bar */
+		
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.question_page);
 		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		
-		MyQPagerAdapter adapter = new MyQPagerAdapter();
-		ViewPager myPager = (ViewPager) findViewById(R.id.soalsoal);
+		adapter = new MyQPagerAdapter();
+		myPager = (ViewPager) findViewById(R.id.soalsoal);
 	    myPager.setAdapter(adapter);
 	    myPager.setCurrentItem(0);
-		
+	    
 		addListenerOnButton();
 	}
 	
@@ -46,24 +57,20 @@ public class Questions extends Activity {
 	public void addListenerOnButton() {
 		
 		rg = (RadioGroup) findViewById(R.id.RadioGroup1);
+		// TODO: Masih belum nemu (null)
 		rb = (Button) findViewById(R.id.button1);
 		
 		
-		rb.setOnClickListener(new OnClickListener() {
+		OnClickListener clicked = new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				
-				int selected = rg.getCheckedRadioButtonId();
-				
-				rbb= (RadioButton) findViewById(selected);
-				
-				Toast.makeText(Questions.this, rbb.getText(), Toast.LENGTH_SHORT).show();
-				
 			}
-		});
+		};
 		
+		//rb.setOnClickListener(clicked);
 		
 	}
 	

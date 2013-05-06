@@ -25,6 +25,8 @@
         </activity>
         <activity android:name="org.ristek.strokeapp.LevelSelector" android:screenOrientation="landscape">
         </activity>
+        <activity android:name="org.ristek.strokeapp.Questions" android:screenOrientation="landscape">
+        </activity>
         <activity android:name="org.ristek.strokeapp.HighScoreScreen" android:screenOrientation="landscape">
         </activity>
         <activity

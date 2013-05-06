@@ -6,16 +6,6 @@
     android:layout_height="wrap_content"
     tools:context=".MyQPagerAdapter" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="42dp"
-        android:text="@string/soal1"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <RadioGroup
         android:id="@+id/RadioGroup1"
         android:layout_width="300dp"
@@ -57,11 +47,21 @@
 
     <Button
         android:id="@+id/button1"
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/RadioGroup1"
-        android:layout_toRightOf="@+id/textView1"
-        android:text="@string/_submit" />
+        android:layout_alignLeft="@+id/RadioGroup1"
+        android:layout_below="@+id/RadioGroup1"
+        android:layout_marginTop="20dp"
+        android:text="Submit" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/RadioGroup1"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="17dp"
+        android:text="@string/soal1"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>
