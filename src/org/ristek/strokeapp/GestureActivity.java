@@ -17,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class GestureActivity extends Activity {
 
@@ -58,9 +59,10 @@ public class GestureActivity extends Activity {
 				boolean result = false;
 				if (pres != null) for(Prediction pre : pres){
 					if(pre.name.equals(gestureName)){
-						System.out.println("Gesture Score: " +pre.score);
+						System.out.println();
 						if(pre.score >= 3.0)
 						  result = true;
+						Toast.makeText(GestureActivity.this, "Gesture Score: " +pre.score, Toast.LENGTH_SHORT).show();
 					}
 				}
 				

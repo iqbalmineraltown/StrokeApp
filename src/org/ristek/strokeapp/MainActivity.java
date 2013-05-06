@@ -7,6 +7,7 @@ import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
+import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
@@ -87,8 +88,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		this.mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		final RatioResolutionPolicy resolutionPolicy = new RatioResolutionPolicy(
-				CAMERA_WIDTH, CAMERA_HEIGHT);
+		final FillResolutionPolicy resolutionPolicy = new FillResolutionPolicy();
 
 		EngineOptions engineOption = new EngineOptions(true,
 				ScreenOrientation.LANDSCAPE_FIXED, resolutionPolicy, mCamera);
