@@ -23,16 +23,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.ristek.strokeapp.LevelSelector" android:screenOrientation="landscape">
+        <activity
+            android:name="org.ristek.strokeapp.LevelSelector"
+            android:screenOrientation="landscape" >
         </activity>
-        <activity android:name="org.ristek.strokeapp.Questions" android:screenOrientation="landscape">
+        <activity
+            android:name="org.ristek.strokeapp.Questions"
+            android:screenOrientation="landscape" >
         </activity>
-        <activity android:name="org.ristek.strokeapp.HighScoreScreen" android:screenOrientation="landscape">
+        <activity
+            android:name="org.ristek.strokeapp.HighScoreScreen"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="org.ristek.strokeapp.OpeningActivity"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name="org.ristek.strokeapp.StrokeFact"
             android:label="Kisah Inspiratif"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name="org.ristek.strokeapp.GestureActivity"
