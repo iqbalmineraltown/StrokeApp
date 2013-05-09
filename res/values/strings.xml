@@ -53,5 +53,6 @@ Setting goals was important – simple tasks first, like walking down the path o
     <string name="_14">14</string>
     <string name="_13">13</string>
     <string name="_submit">Submit</string>
-
+	<string name="finish">Selesai</string>
+	<string name="delete">Hapus</string>
 </resources>

@@ -2,8 +2,8 @@ package org.ristek.strokeapp;
 
 import java.util.ArrayList;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -11,6 +11,7 @@ import android.gesture.GestureOverlayView;
 import android.gesture.Prediction;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 
 public class GestureActivity extends Activity {
 
+	private static final double MINIMAL_GESTURE_SCORE = 4.0;
+	
 	GestureLibrary gestureLib;
 	String gestureName;
 
@@ -32,13 +35,20 @@ public class GestureActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		/* end remove title bar and notification bar */
-
+		
+		
 		gestureName = getIntent().getStringExtra("gestureName");
 		gestureLib = GestureLibraries.fromRawResource(this, R.raw.aksara);
 		gestureLib.load();
-
+		
 		setContentView(R.layout.activity_gesture);
 		ImageView image = (ImageView) findViewById(R.id.imageView1);
+//		LinearLayout layout = (LinearLayout) findViewById(R.id.LinearLayout1);
+//		try {
+//			layout.setBackgroundDrawable(Drawable.createFromPath(getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0).applicationInfo.dataDir+"/assets/images/trace.png"));
+//		} catch (NameNotFoundException e) {
+//			e.printStackTrace();
+//		}
 		Bitmap gestureImage = gestureLib.getGestures(gestureName).get(0)
 				.toBitmap(800, 480, 20, 100, Color.RED);
 		image.setImageBitmap(gestureImage);
@@ -51,20 +61,26 @@ public class GestureActivity extends Activity {
 			public void onClick(View v) {
 				Gesture input = gestureOverlay.getGesture();
 				Gesture emptyGesture = new Gesture();
-				gestureOverlay.setGesture(emptyGesture);
+				//gestureOverlay.setGesture(emptyGesture);
 				ArrayList<Prediction> pres = null;
 				if(input != null && !input.equals(emptyGesture) && input.getStrokesCount() > 0){
 					pres = gestureLib.recognize(input);
 				}
 				boolean result = false;
+				double score = 0;
 				if (pres != null) for(Prediction pre : pres){
 					if(pre.name.equals(gestureName)){
 						System.out.println();
-						if(pre.score >= 3.0)
+						if(pre.score >= MINIMAL_GESTURE_SCORE)
 						  result = true;
-						Toast.makeText(GestureActivity.this, "Gesture Score: " +pre.score, Toast.LENGTH_SHORT).show();
+						score = pre.score;
 					}
 				}
+				Intent returnIntent = new Intent();
+				returnIntent.putExtra("gestureResult", result);
+				returnIntent.putExtra("gestureScore", score);
+				setResult(RESULT_OK, returnIntent);
+				finish();
 				
 			}
 		});

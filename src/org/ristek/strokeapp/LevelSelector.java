@@ -66,6 +66,12 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	@Override
 	protected Scene onCreateScene() {
 		// TODO Auto-generated method stub
 		this.mEngine.registerUpdateHandler(new FPSLogger());
@@ -92,7 +98,7 @@ public class LevelSelector extends SimpleBaseGameActivity {
 								Intent intent = new Intent(LevelSelector.this,
 										GestureActivity.class);
 								intent.putExtra("gestureName", gestureName[i-5]);
-								startActivity(intent);
+								startActivityForResult(intent,0);
 							}
 						}
 						if (arrRect[i].contains(pX, pY)) {
