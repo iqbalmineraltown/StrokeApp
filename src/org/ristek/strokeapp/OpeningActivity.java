@@ -27,7 +27,7 @@ public class OpeningActivity extends Activity {
 	   
 	   Scroller s = new Scroller(this,  new LinearInterpolator());
 	   tv.setScroller(s);
-	   s.startScroll(0, 0, 0, 100, 10000);
+	   s.startScroll(0, 0, 0,600, 30000);
 	   /**
 	    * if s.isFinished -> pindah ke select stage
 	    */
