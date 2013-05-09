@@ -20,6 +20,7 @@ import org.andengine.util.HorizontalAlign;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.view.KeyEvent;
 
 public class LevelSelector extends SimpleBaseGameActivity {
 
@@ -148,5 +149,15 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		}
 		return mMainScene;
 	}
+	@Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+            if(keyCode == KeyEvent.KEYCODE_BACK){
+            	Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+            }
+            return super.onKeyDown(keyCode, event);
+    }
 
 }

@@ -201,7 +201,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 						
 						if (i == MENU_START) {
 							Intent intent = new Intent(MainActivity.this,
-									LevelSelector.class);
+									OpeningActivity.class);
 							startActivity(intent);
 						} else if (i == MENU_TIME_TRIAL) {
 							// TODO Time Trial
