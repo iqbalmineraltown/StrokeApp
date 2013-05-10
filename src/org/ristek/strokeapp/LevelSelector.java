@@ -1,5 +1,8 @@
 package org.ristek.strokeapp;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -14,6 +17,7 @@ import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 
@@ -21,6 +25,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 public class LevelSelector extends SimpleBaseGameActivity {
 
@@ -30,7 +35,13 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 	private static final int CAMERA_WIDTH = 800;
 	private static final int CAMERA_HEIGHT = 480;
-	private static final String[] gestureName = {"Ha","Na","Ca","Ra","Ka"};
+	private static final String[] gestureName = { "Nga", "Ga", "Pa", "Da",
+			"Ca", "Ba", "Tha", "Ya", "Ta", "Ja", "Wa", "Ka", "Dha", "Ha", "Ma",
+			"Sa", "Na", "Nya", "Ra", "La" };
+
+	private static final int QUESTION_ACTIVITY_REQUEST = 1;
+	private static final int GESTURE_ACTIVITY_REQUEST = 2;
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -67,10 +78,15 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == GESTURE_ACTIVITY_REQUEST && resultCode == RESULT_OK) {
+			Toast.makeText(
+					this,
+					"Hasil:" + data.getBooleanExtra("gestureResult", false)
+							+ data.getDoubleExtra("gestureScore", 0),
+					Toast.LENGTH_SHORT).show();
+		}
 	}
-	
+
 	@Override
 	protected Scene onCreateScene() {
 		// TODO Auto-generated method stub
@@ -95,10 +111,13 @@ public class LevelSelector extends SimpleBaseGameActivity {
 								startActivity(intent);
 							} else {
 								// Jika bagian gesture
+								Collections.shuffle(Arrays.asList(gestureName));
 								Intent intent = new Intent(LevelSelector.this,
 										GestureActivity.class);
-								intent.putExtra("gestureName", gestureName[i-5]);
-								startActivityForResult(intent,0);
+								intent.putExtra("gestureName",
+										gestureName[0]);
+								startActivityForResult(intent,
+										GESTURE_ACTIVITY_REQUEST);
 							}
 						}
 						if (arrRect[i].contains(pX, pY)) {
@@ -155,15 +174,16 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		}
 		return mMainScene;
 	}
+
 	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-            if(keyCode == KeyEvent.KEYCODE_BACK){
-            	Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            }
-            return super.onKeyDown(keyCode, event);
-    }
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Intent intent = new Intent(this, MainActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 }
