@@ -2,20 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="#000000"
-    android:gravity="center" >
+    android:layout_height="fill_parent"
+   >
 
     <ScrollView
         android:id="@+id/scroll_opening"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000" >
+        android:background="#000000" 
+        >
 
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="#000000"
+            android:background="@drawable/kisah"
             android:gravity="center" >
 
             <TextView
@@ -29,7 +29,7 @@
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="1"
                 android:text="@string/opening_story"
-                android:textColor="#FFFFFF"
+                android:textColor="#555555"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </RelativeLayout>
