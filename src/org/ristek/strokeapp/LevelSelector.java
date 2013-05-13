@@ -45,12 +45,18 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 	private static final int CAMERA_WIDTH = 800;
 	private static final int CAMERA_HEIGHT = 480;
-	private static final String[] gestureName = { "Nga", "Ga", "Pa", "Da",
-			"Ca", "Ba", "Tha", "Ya", "Ta", "Ja", "Wa", "Ka", "Dha", "Ha", "Ma",
-			"Sa", "Na", "Nya", "Ra", "La" };
-
+	private static final String[] gestureName = { "Ga", "Pa", "Da", "Ca", "Ya",
+			"Ta", "Ja", "Wa", "Ka", "Dha", "Ha", "Ma", "Sa", "Na", "Ra", "La" };
+	int gestureInt = 0;
 	private static final int QUESTION_ACTIVITY_REQUEST = 1;
 	private static final int GESTURE_ACTIVITY_REQUEST = 2;
+
+	private static final int POST_SUM = 9;
+
+	private static final int STATE_LEVEL_SELECT = 0;
+	private static final int STATE_QUESTION_LEVEL = 1;
+	private static final int STATE_GESTURE_LEVEL = 2;
+	private static final int STATE_FINAL_LEVEL = 3;
 
 	// ===========================================================
 	// Fields
@@ -58,13 +64,16 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 	protected Camera mCamera;
 	protected Rectangle mMap;
-	protected Rectangle[] arrRect;
-	protected Text mStartText;
+	protected Sprite[] arrPost;
+	protected Sprite[] arrPostPressed;
 	protected Scene mMainScene;
-	protected Text mText;
 	protected Font mFont;
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
 	private TextureRegion mBackTextureRegion;
+	private TextureRegion mPostTextureRegion;
+	private TextureRegion mPostPressedTextureRegion;
+	private int gameState;
+	private int gameLevel;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -88,13 +97,18 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(this.mBitmapTextureAtlas, this,
 						"images/map.png");
-		
+		this.mPostTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mBitmapTextureAtlas, this,
+						"images/i-pos.png");
+		this.mPostPressedTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mBitmapTextureAtlas, this,
+						"images/i-pass.png");
 		this.mFont = FontFactory.create(this.getFontManager(),
 				this.getTextureManager(), 256, 256,
 				Typeface.create(Typeface.DEFAULT, Typeface.ITALIC), 32);
 
 		this.mFont.load();
-		
+
 		try {
 			this.mBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -107,21 +121,45 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == GESTURE_ACTIVITY_REQUEST && resultCode == RESULT_OK) {
-			Toast.makeText(
-					this,
-					"Hasil:" + (data.getBooleanExtra("gestureResult", false)?"Benar":"Salah"),
-					Toast.LENGTH_SHORT).show();
+		if (gameState == STATE_GESTURE_LEVEL) {
+			if (requestCode == GESTURE_ACTIVITY_REQUEST
+					&& resultCode == RESULT_OK
+					&& data.getBooleanExtra("gestureResult", false)) {
+				Toast.makeText(this, "Hasil : Benar", Toast.LENGTH_SHORT)
+						.show();
+				if (gameLevel < 3) {
+					gameLevel++;
+					createGestureLevel(gameLevel);
+				} else {
+					Toast.makeText(
+							this,
+							"Hasil : "
+									+ (data.getBooleanExtra("gestureResult",
+											false) ? "Benar" : "Salah"),
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+			else{
+				Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
+				.show();
+				gameState = STATE_LEVEL_SELECT;
+				gameLevel = 0;
+			}
 		}
+	}
+
+	protected void createGestureLevel(int gestureNum) {
+		Intent intent = new Intent(LevelSelector.this, GestureActivity.class);
+		intent.putExtra("gestureName", gestureName[gestureNum]);
+		startActivityForResult(intent, GESTURE_ACTIVITY_REQUEST);
 	}
 
 	@Override
 	protected Scene onCreateScene() {
 		// TODO Auto-generated method stub
+		gameState = 0;
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		
-		
 		float pX = mCamera.getWidth();
 		float pY = mCamera.getHeight();
 		mMainScene = new Scene() {
@@ -132,8 +170,15 @@ public class LevelSelector extends SimpleBaseGameActivity {
 				float pX = pSceneTouchEvent.getX();
 				float pY = pSceneTouchEvent.getY();
 				if (pSceneTouchEvent.isActionDown()) {
-					for (int i = 0; i < arrRect.length; i++) {
-						if (arrRect[i].contains(pX, pY) && selection == i) {
+					for (int i = 0; i < arrPost.length; i++) {
+						if (arrPost[i].contains(pX, pY)) {
+							selection = i;
+						}
+					}
+				} else if (pSceneTouchEvent.isActionUp()) {
+					for (int i = 0; i < arrPost.length; i++) {
+						if (arrPost[i].contains(pX, pY) && selection == i) {
+							selection = -1;
 							if (i < 5) {
 								// Jika bagian pertanyaan
 								Intent intent = new Intent(LevelSelector.this,
@@ -142,42 +187,17 @@ public class LevelSelector extends SimpleBaseGameActivity {
 							} else {
 								// Jika bagian gesture
 								Collections.shuffle(Arrays.asList(gestureName));
-								Intent intent = new Intent(LevelSelector.this,
-										GestureActivity.class);
-								intent.putExtra("gestureName",
-										gestureName[0]);
-								startActivityForResult(intent,
-										GESTURE_ACTIVITY_REQUEST);
+								gameState = STATE_GESTURE_LEVEL;
+								gameLevel = 1;
+								createGestureLevel(gameLevel);
 							}
-						}
-						if (arrRect[i].contains(pX, pY)) {
-							selection = i;
+
 						}
 					}
-					for (int i = 0; i < arrRect.length; i++) {
-						if (i == selection) {
-							arrRect[i].setColor(1, 0, 0);
-						} else {
-							arrRect[i].setColor(0, 0, 0);
-						}
-					}
-					if(mStartText.contains(pX, pY)){
-						if (selection < 5) {
-							// Jika bagian pertanyaan
-							Intent intent = new Intent(LevelSelector.this,
-									Questions.class);
-							startActivity(intent);
-						} else {
-							// Jika bagian gesture
-							Collections.shuffle(Arrays.asList(gestureName));
-							Intent intent = new Intent(LevelSelector.this,
-									GestureActivity.class);
-							intent.putExtra("gestureName",
-									gestureName[0]);
-							startActivityForResult(intent,
-									GESTURE_ACTIVITY_REQUEST);
-						}
-					}
+				}
+				for (int i = 0; i < arrPost.length; i++) {
+					arrPost[i].setVisible(i != selection);
+					arrPostPressed[i].setVisible(i == selection);
 				}
 				return super.onSceneTouchEvent(pSceneTouchEvent);
 			}
@@ -185,41 +205,25 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		mMainScene.setBackground(new SpriteBackground(new Sprite(0, 0,
 				mBackTextureRegion, getVertexBufferObjectManager())));
 
-		//mMap = new Rectangle(pX / 8, pY / 8, 3 * pX / 4, 3 * pY / 4,
-//				getVertexBufferObjectManager());
-		//mMap.setColor(100, 100, 100);
+		// mMap = new Rectangle(pX / 8, pY / 8, 3 * pX / 4, 3 * pY / 4,
+		// getVertexBufferObjectManager());
+		// mMap.setColor(100, 100, 100);
 
-		arrRect = new Rectangle[9];
-		arrRect[0] = new Rectangle(100, 100, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[1] = new Rectangle(100, 200, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[2] = new Rectangle(100, 300, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[3] = new Rectangle(200, 100, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[4] = new Rectangle(200, 200, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[5] = new Rectangle(200, 300, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[6] = new Rectangle(300, 100, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[7] = new Rectangle(300, 200, 50, 50,
-				getVertexBufferObjectManager());
-		arrRect[8] = new Rectangle(300, 300, 50, 50,
-				getVertexBufferObjectManager());
-
-		mText = new Text(pX / 8, pY / 8, this.mFont, "Pilih Level",
-				new TextOptions(HorizontalAlign.LEFT),
-				getVertexBufferObjectManager());
-		mStartText = new Text(400, 300, this.mFont, "Mulai", getVertexBufferObjectManager());
-		//mMainScene.attachChild(mMap);
-		mMainScene.attachChild(mText);
-		mMainScene.attachChild(mStartText);
-		for (int i = 0; i < arrRect.length; i++) {
-			arrRect[i].setColor(0, 0, 0);
-			mMainScene.attachChild(arrRect[i]);
-			mMainScene.registerTouchArea(arrRect[i]);
+		arrPost = new Sprite[POST_SUM];
+		for (int i = 0; i < arrPost.length; i++) {
+			arrPost[i] = new Sprite(100 + (i % 3) * 100, 100 + (i / 3) * 100,
+					mPostTextureRegion, getVertexBufferObjectManager());
+			mMainScene.attachChild(arrPost[i]);
+			mMainScene.registerTouchArea(arrPost[i]);
+		}
+		arrPostPressed = new Sprite[POST_SUM];
+		for (int i = 0; i < arrPostPressed.length; i++) {
+			arrPostPressed[i] = new Sprite(100 + (i % 3) * 100,
+					100 + (i / 3) * 100, mPostPressedTextureRegion,
+					getVertexBufferObjectManager());
+			arrPostPressed[i].setVisible(false);
+			mMainScene.attachChild(arrPostPressed[i]);
+			mMainScene.registerTouchArea(arrPostPressed[i]);
 		}
 		return mMainScene;
 	}

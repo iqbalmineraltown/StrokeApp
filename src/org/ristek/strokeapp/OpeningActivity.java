@@ -1,21 +1,15 @@
 package org.ristek.strokeapp;
 
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.os.Handler;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.text.method.ScrollingMovementMethod;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.Scroller;
 import android.widget.TextView;
 
@@ -39,6 +33,12 @@ public class OpeningActivity extends Activity {
 	   Scroller s = new Scroller(this,  new LinearInterpolator());
 	   tv.setScroller(s);
 	   s.startScroll(0, 0, 0,600, 30000);
+	   
+	   new Handler().postDelayed(new Runnable() { public void run() {
+		   Intent intent = new Intent(OpeningActivity.this,
+					LevelSelector.class);
+			startActivity(intent);
+      }}, 30000);
 	  
 	   Button button= (Button) findViewById(R.id.buttonSkip);
 	   button.setOnClickListener(new View.OnClickListener() {

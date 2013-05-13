@@ -3,20 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/story"
    >
 
     <ScrollView
         android:id="@+id/scroll_opening"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000" 
         >
 
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/kisah"
-            android:gravity="center" >
+            android:gravity="center" 
+            android:background="#55ffffff">
 
             <TextView
                 android:id="@+id/content_opening"
@@ -29,7 +29,7 @@
                 android:gravity="center_horizontal"
                 android:marqueeRepeatLimit="1"
                 android:text="@string/opening_story"
-                android:textColor="#555555"
+                android:textColor="#000000"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </RelativeLayout>

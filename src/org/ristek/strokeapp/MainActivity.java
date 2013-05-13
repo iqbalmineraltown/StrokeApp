@@ -268,10 +268,10 @@ public class MainActivity extends SimpleBaseGameActivity {
 					edit.commit();
 					if (getSharedPreferences("StrokeAppOptions", MODE_PRIVATE)
 							.getBoolean("SoundOn", true)) {
-						soundOption.setText("Sound : ON");
+						soundOption.setText("Suara : Hidup");
 //						bgMusic.play();
 					} else {
-						soundOption.setText("Sound : OFF");
+						soundOption.setText("Suara : Mati");
 //						bgMusic.pause();
 					}
 
