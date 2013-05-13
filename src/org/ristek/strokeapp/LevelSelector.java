@@ -11,15 +11,25 @@ import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.scene.background.SpriteBackground;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.TextureOptions;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
+import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
+import org.andengine.util.debug.Debug;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -49,9 +59,12 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	protected Camera mCamera;
 	protected Rectangle mMap;
 	protected Rectangle[] arrRect;
+	protected Text mStartText;
 	protected Scene mMainScene;
 	protected Text mText;
 	protected Font mFont;
+	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
+	private TextureRegion mBackTextureRegion;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -69,11 +82,27 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	@Override
 	protected void onCreateResources() {
 		// TODO Auto-generated method stub
+		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+				this.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mBitmapTextureAtlas, this,
+						"images/map.png");
+		
 		this.mFont = FontFactory.create(this.getFontManager(),
 				this.getTextureManager(), 256, 256,
 				Typeface.create(Typeface.DEFAULT, Typeface.ITALIC), 32);
 
 		this.mFont.load();
+		
+		try {
+			this.mBitmapTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 0, 1));
+			this.mBitmapTextureAtlas.load();
+		} catch (TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
 	}
 
 	@Override
@@ -81,8 +110,7 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		if (requestCode == GESTURE_ACTIVITY_REQUEST && resultCode == RESULT_OK) {
 			Toast.makeText(
 					this,
-					"Hasil:" + data.getBooleanExtra("gestureResult", false)
-							+ data.getDoubleExtra("gestureScore", 0),
+					"Hasil:" + (data.getBooleanExtra("gestureResult", false)?"Benar":"Salah"),
 					Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -92,6 +120,8 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		// TODO Auto-generated method stub
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
+		
+		
 		float pX = mCamera.getWidth();
 		float pY = mCamera.getHeight();
 		mMainScene = new Scene() {
@@ -131,16 +161,33 @@ public class LevelSelector extends SimpleBaseGameActivity {
 							arrRect[i].setColor(0, 0, 0);
 						}
 					}
+					if(mStartText.contains(pX, pY)){
+						if (selection < 5) {
+							// Jika bagian pertanyaan
+							Intent intent = new Intent(LevelSelector.this,
+									Questions.class);
+							startActivity(intent);
+						} else {
+							// Jika bagian gesture
+							Collections.shuffle(Arrays.asList(gestureName));
+							Intent intent = new Intent(LevelSelector.this,
+									GestureActivity.class);
+							intent.putExtra("gestureName",
+									gestureName[0]);
+							startActivityForResult(intent,
+									GESTURE_ACTIVITY_REQUEST);
+						}
+					}
 				}
 				return super.onSceneTouchEvent(pSceneTouchEvent);
 			}
 		};
-		mMainScene.setBackground(new Background(Color.BLUE, CAMERA_HEIGHT,
-				CAMERA_WIDTH));
+		mMainScene.setBackground(new SpriteBackground(new Sprite(0, 0,
+				mBackTextureRegion, getVertexBufferObjectManager())));
 
-		mMap = new Rectangle(pX / 8, pY / 8, 3 * pX / 4, 3 * pY / 4,
-				getVertexBufferObjectManager());
-		mMap.setColor(100, 100, 100);
+		//mMap = new Rectangle(pX / 8, pY / 8, 3 * pX / 4, 3 * pY / 4,
+//				getVertexBufferObjectManager());
+		//mMap.setColor(100, 100, 100);
 
 		arrRect = new Rectangle[9];
 		arrRect[0] = new Rectangle(100, 100, 50, 50,
@@ -162,11 +209,13 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		arrRect[8] = new Rectangle(300, 300, 50, 50,
 				getVertexBufferObjectManager());
 
-		mText = new Text(pX / 8, pY / 8, this.mFont, "Select Level",
+		mText = new Text(pX / 8, pY / 8, this.mFont, "Pilih Level",
 				new TextOptions(HorizontalAlign.LEFT),
 				getVertexBufferObjectManager());
-		mMainScene.attachChild(mMap);
+		mStartText = new Text(400, 300, this.mFont, "Mulai", getVertexBufferObjectManager());
+		//mMainScene.attachChild(mMap);
 		mMainScene.attachChild(mText);
+		mMainScene.attachChild(mStartText);
 		for (int i = 0; i < arrRect.length; i++) {
 			arrRect[i].setColor(0, 0, 0);
 			mMainScene.attachChild(arrRect[i]);

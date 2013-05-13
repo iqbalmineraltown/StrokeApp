@@ -11,6 +11,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -21,6 +23,13 @@ public class OpeningActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		/* remove title bar and notification bar */
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		/* end remove title bar and notification bar */
+		
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.opening_story);
 		

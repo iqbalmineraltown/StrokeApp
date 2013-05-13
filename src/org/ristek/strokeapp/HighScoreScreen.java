@@ -7,6 +7,7 @@ import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
@@ -17,9 +18,14 @@ import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
+import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
+import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
+import org.andengine.util.debug.Debug;
 
 import android.graphics.Color;
 
@@ -40,9 +46,10 @@ public class HighScoreScreen extends SimpleBaseGameActivity{
 	private Font mFont2;
 	private Text centerText;
 	private Text back;
-	private TextureRegion mRoundedRect;
+	//private TextureRegion mRoundedRect;
 	private Sprite mRect;
-	private BitmapTextureAtlas mBitmapTextureAtlas;
+	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
+	private TextureRegion mBackTextureRegion;
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		// TODO Auto-generated method stub
@@ -59,6 +66,8 @@ public class HighScoreScreen extends SimpleBaseGameActivity{
 		// TODO Auto-generated method stub
 		FontFactory.setAssetBasePath("fonts/");
 		
+		
+		
 		mFontTexture1 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
 		mFontTexture2 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
 		mFont1 = FontFactory.createFromAsset(this.getFontManager(), mFontTexture1, this.getAssets(), "VintageOne.ttf", 32f, true, Color.BLACK);
@@ -67,10 +76,21 @@ public class HighScoreScreen extends SimpleBaseGameActivity{
 		this.mFont2.load();
 		
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("images/");
-		mBitmapTextureAtlas = new BitmapTextureAtlas(mEngine.getTextureManager(),1024,1024);
-		mRoundedRect = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this , "rounded_rect.png", 0,0);
-		
-		mBitmapTextureAtlas.load();
+		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+				this.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mBitmapTextureAtlas, this,
+						"hiscore.png");
+		//mRoundedRect = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this , "rounded_rect.png", 0,0);
+		try {
+			this.mBitmapTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 0, 1));
+			this.mBitmapTextureAtlas.load();
+		} catch (TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
 		
 		
 		
@@ -79,36 +99,37 @@ public class HighScoreScreen extends SimpleBaseGameActivity{
 	@Override
 	protected Scene onCreateScene() {
 		// TODO Auto-generated method stub
-		float pY = mCamera.getHeight()/2-mRoundedRect.getHeight()/2;
-		float pX = mCamera.getWidth()/2-mRoundedRect.getWidth()/2; 
+		//float pY = mCamera.getHeight()/2-mRoundedRect.getHeight()/2;
+		//float pX = mCamera.getWidth()/2-mRoundedRect.getWidth()/2; 
 		mScene = new Scene();
-		mScene.setBackground(new Background(Color.BLUE, CAMERA_HEIGHT, CAMERA_HEIGHT));
+		mScene.setBackground(new SpriteBackground(new Sprite(0, 0,
+				mBackTextureRegion, getVertexBufferObjectManager())));
 		
-		this.centerText = new Text(300, 40, this.mFont1, " High Score ", 
-				new TextOptions(HorizontalAlign.LEFT), this.getVertexBufferObjectManager());
-		this.back = new Text(0, 0, 
-				this.mFont2, "BACK",new TextOptions(HorizontalAlign.LEFT), this.getVertexBufferObjectManager()){
+	//	this.centerText = new Text(300, 40, this.mFont1, " High Score ", 
+		//		new TextOptions(HorizontalAlign.LEFT), this.getVertexBufferObjectManager());
+		//this.back = new Text(0, 0, 
+		//		this.mFont2, "BACK",new TextOptions(HorizontalAlign.LEFT), this.getVertexBufferObjectManager()){
+//		
+//			@Override
+//			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+//					float pTouchAreaLocalX, float pTouchAreaLocalY) {
+//				finish();
+//				
+//				return true;
+//			}
+//			
+//			
+//		};
 		
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				finish();
-				
-				return true;
-			}
-			
-			
-		};
-		
-		back.setPosition((mCamera.getWidth()/2)-back.getWidth()/2, 
-				mCamera.getHeight()-back.getHeight()*2);
-		mRect = new Sprite(pX,pY, mRoundedRect, getVertexBufferObjectManager());
+		//back.setPosition((mCamera.getWidth()/2)-back.getWidth()/2, 
+			//	mCamera.getHeight()-back.getHeight()*2);
+		//mRect = new Sprite(pX,pY, mRoundedRect, getVertexBufferObjectManager());
 		
 		
-		mScene.attachChild(centerText);
-		mScene.attachChild(back);
-		mScene.attachChild(mRect);
-		mScene.registerTouchArea(back);
+		//mScene.attachChild(centerText);
+		//mScene.attachChild(back);
+		//mScene.attachChild(mRect);
+		//mScene.registerTouchArea(back);
 		
 		
 		return mScene;
