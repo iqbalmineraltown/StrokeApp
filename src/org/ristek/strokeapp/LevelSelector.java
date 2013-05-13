@@ -183,6 +183,7 @@ public class LevelSelector extends SimpleBaseGameActivity {
 								// Jika bagian pertanyaan
 								Intent intent = new Intent(LevelSelector.this,
 										Questions.class);
+								intent.putExtra("QuestionIndex", i);
 								startActivity(intent);
 							} else {
 								// Jika bagian gesture

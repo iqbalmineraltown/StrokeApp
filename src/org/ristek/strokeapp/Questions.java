@@ -1,7 +1,12 @@
 package org.ristek.strokeapp;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -15,16 +20,37 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Questions extends Activity {
 
-	private Button rb;
-	private RadioGroup rg;
-	private RadioButton rbb;
-	private ViewPager myPager;
-	private MyQPagerAdapter adapter;
-	
+	private TextView questionText;
+	private Button submitButton;
+	private RadioGroup questionGroup;
+	private RadioButton[] questionButton;
+	private static Question[] questionList;
+
+	protected void loadQuestion() {
+		try {
+			BufferedReader file = new BufferedReader(new InputStreamReader(
+					getAssets().open("question.txt")));
+			int sum = Integer.parseInt(file.readLine());
+			questionList = new Question[sum];
+			for (int i = 0; i < sum; i++) {
+				questionList[i] = new Question(file.readLine(),
+						file.readLine(), file.readLine(), file.readLine(),
+						file.readLine(), file.readLine(), Integer.parseInt(file
+								.readLine()));
+			}
+			file.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		/* remove title bar and notification bar */
@@ -32,21 +58,31 @@ public class Questions extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		/* end remove title bar and notification bar */
-		
+
+		if (questionList == null)
+			loadQuestion();
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.question_page);
-		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		// setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		
-		adapter = new MyQPagerAdapter();
-		myPager = (ViewPager) findViewById(R.id.soalsoal);
-	    myPager.setAdapter(adapter);
-	    myPager.setCurrentItem(0);
-	    
+		questionText = (TextView) findViewById(R.id.textViewQuestion);
+		questionButton = new RadioButton[5];
+		questionButton[0] = (RadioButton) findViewById(R.id.radio0);
+		questionButton[1] = (RadioButton) findViewById(R.id.radio1);
+		questionButton[2] = (RadioButton) findViewById(R.id.radio2);
+		questionButton[3] = (RadioButton) findViewById(R.id.radio3);
+		questionButton[4] = (RadioButton) findViewById(R.id.radio4);
+		
+		int qidx = getIntent().getIntExtra("QuestionIndex", 0);
+		questionText.setText(questionList[qidx].question);
+		for (int i = 0; i < questionButton.length; i++) {
+			questionButton[i].setText(questionList[qidx].answer[i]);
+		}
+		
 		addListenerOnButton();
 	}
-	
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -55,60 +91,39 @@ public class Questions extends Activity {
 	}
 
 	public void addListenerOnButton() {
-		
-		rg = (RadioGroup) findViewById(R.id.RadioGroup1);
-		// TODO: Masih belum nemu (null)
-		rb = (Button) findViewById(R.id.button1);
-		
-		
+
+		questionGroup = (RadioGroup) findViewById(R.id.RadioGroup1);
+		submitButton = (Button) findViewById(R.id.button1);
+
 		OnClickListener clicked = new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		};
-		
-		//rb.setOnClickListener(clicked);
-		
+
+		// rb.setOnClickListener(clicked);
+
 	}
-	
+
 }
 
-class MyQPagerAdapter extends PagerAdapter{
-	
-	public int getCount() {
-        return 1;
-    }
-    public Object instantiateItem(View collection, int position) {
-        LayoutInflater inflater = (LayoutInflater) collection.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        int resId = 0;
-        switch (position) {
-        case 0:
-            resId = R.layout.question1;
-            break;
-        
-        }
-        View view = inflater.inflate(resId, null);
-        
-        ((ViewPager) collection).addView(view, 0);
-        return view;
-    }
-    @Override
-    public void destroyItem(View arg0, int arg1, Object arg2) {
-        ((ViewPager) arg0).removeView((View) arg2);
-    }
-    @Override
-    public boolean isViewFromObject(View arg0, Object arg1) {
-        return arg0 == ((View) arg1);
-    }
-    @Override
-    public Parcelable saveState() {
-        return null;
-    }
-	
-	
-	
+class Question {
+	String question;
+	String[] answer;
+	int trueAnswer;
+
+	Question(String question, String answer0, String answer1, String answer2,
+			String answer3, String answer4, int trueAnswer) {
+		this.question = question;
+		this.answer = new String[5];
+		this.answer[0] = answer0;
+		this.answer[1] = answer1;
+		this.answer[2] = answer2;
+		this.answer[3] = answer3;
+		this.answer[4] = answer4;
+		this.trueAnswer = trueAnswer;
+	}
 }
