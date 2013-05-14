@@ -74,6 +74,7 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	private TextureRegion mPostPressedTextureRegion;
 	private int gameState;
 	private int gameLevel;
+	private int trueAnswer;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -121,6 +122,35 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (gameState == STATE_QUESTION_LEVEL) {
+			if (requestCode == QUESTION_ACTIVITY_REQUEST
+					&& resultCode == RESULT_OK) {
+				if (gameLevel < 5) {
+					gameLevel++;
+					if (data.getBooleanExtra("QuestionResult", false))
+						trueAnswer++;
+					Intent intent = new Intent(LevelSelector.this,
+							Questions.class);
+					intent.putExtra("QuestionIndex", gameLevel - 1);
+					startActivityForResult(intent, QUESTION_ACTIVITY_REQUEST);
+				} else {
+					if (data.getBooleanExtra("QuestionResult", false))
+						trueAnswer++;
+					Toast.makeText(
+							this,
+							"Hasil : "
+									+ ((trueAnswer == 5) ? "Benar" : "Salah"),
+							Toast.LENGTH_SHORT).show();
+					gameState = STATE_LEVEL_SELECT;
+					gameLevel = 0;
+				}
+			} else {
+				Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
+						.show();
+				gameState = STATE_LEVEL_SELECT;
+				gameLevel = 0;
+			}
+		}
 		if (gameState == STATE_GESTURE_LEVEL) {
 			if (requestCode == GESTURE_ACTIVITY_REQUEST
 					&& resultCode == RESULT_OK
@@ -137,11 +167,12 @@ public class LevelSelector extends SimpleBaseGameActivity {
 									+ (data.getBooleanExtra("gestureResult",
 											false) ? "Benar" : "Salah"),
 							Toast.LENGTH_SHORT).show();
+					gameState = STATE_LEVEL_SELECT;
+					gameLevel = 0;
 				}
-			}
-			else{
+			} else {
 				Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
-				.show();
+						.show();
 				gameState = STATE_LEVEL_SELECT;
 				gameLevel = 0;
 			}
@@ -181,10 +212,15 @@ public class LevelSelector extends SimpleBaseGameActivity {
 							selection = -1;
 							if (i < 5) {
 								// Jika bagian pertanyaan
+								gameState = STATE_QUESTION_LEVEL;
+								gameLevel = 1;
+								trueAnswer = 0;
 								Intent intent = new Intent(LevelSelector.this,
 										Questions.class);
-								intent.putExtra("QuestionIndex", i);
-								startActivity(intent);
+								intent.putExtra("QuestionIndex", gameLevel - 1);
+								startActivityForResult(intent,
+										QUESTION_ACTIVITY_REQUEST);
+
 							} else {
 								// Jika bagian gesture
 								Collections.shuffle(Arrays.asList(gestureName));

@@ -33,12 +33,6 @@ public class OpeningActivity extends Activity {
 	   Scroller s = new Scroller(this,  new LinearInterpolator());
 	   tv.setScroller(s);
 	   s.startScroll(0, 0, 0,600, 30000);
-	   
-	   new Handler().postDelayed(new Runnable() { public void run() {
-		   Intent intent = new Intent(OpeningActivity.this,
-					LevelSelector.class);
-			startActivity(intent);
-      }}, 30000);
 	  
 	   Button button= (Button) findViewById(R.id.buttonSkip);
 	   button.setOnClickListener(new View.OnClickListener() {

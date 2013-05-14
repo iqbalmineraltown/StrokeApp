@@ -15,13 +15,13 @@
         android:layout_centerVertical="true" >
 
         <RadioButton
-            android:id="@+id/radio1"
+            android:id="@+id/radio0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/_14" />
 
         <RadioButton
-            android:id="@+id/radio0"
+            android:id="@+id/radio1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/_13" />

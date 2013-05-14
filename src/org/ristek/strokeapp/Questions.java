@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -29,6 +30,7 @@ public class Questions extends Activity {
 	private Button submitButton;
 	private RadioGroup questionGroup;
 	private RadioButton[] questionButton;
+	private int questionId;
 	private static Question[] questionList;
 
 	protected void loadQuestion() {
@@ -65,7 +67,7 @@ public class Questions extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.question_page);
 		// setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		
+
 		questionText = (TextView) findViewById(R.id.textViewQuestion);
 		questionButton = new RadioButton[5];
 		questionButton[0] = (RadioButton) findViewById(R.id.radio0);
@@ -73,13 +75,13 @@ public class Questions extends Activity {
 		questionButton[2] = (RadioButton) findViewById(R.id.radio2);
 		questionButton[3] = (RadioButton) findViewById(R.id.radio3);
 		questionButton[4] = (RadioButton) findViewById(R.id.radio4);
-		
-		int qidx = getIntent().getIntExtra("QuestionIndex", 0);
-		questionText.setText(questionList[qidx].question);
+
+		questionId = getIntent().getIntExtra("QuestionIndex", 0);
+		questionText.setText(questionList[questionId].question);
 		for (int i = 0; i < questionButton.length; i++) {
-			questionButton[i].setText(questionList[qidx].answer[i]);
+			questionButton[i].setText(questionList[questionId].answer[i]);
 		}
-		
+
 		addListenerOnButton();
 	}
 
@@ -99,12 +101,17 @@ public class Questions extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-
+				Intent resultIntent = new Intent();
+				resultIntent
+						.putExtra(
+								"QuestionResult",
+								(questionGroup.getCheckedRadioButtonId() == questionList[questionId].trueAnswer));
+				setResult(RESULT_OK, resultIntent);
+				finish();
 			}
 		};
 
-		// rb.setOnClickListener(clicked);
+		submitButton.setOnClickListener(clicked);
 
 	}
 
