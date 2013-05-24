@@ -39,6 +39,8 @@ import org.andengine.util.debug.Debug;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
+import android.os.Looper;
+import android.widget.Toast;
 
 public class MainActivity extends SimpleBaseGameActivity {
 
@@ -247,6 +249,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 	class OptionsScene extends Scene {
 		final Text soundOption;
+		final Text resetText;
 		final Text backButton;
 
 		public OptionsScene() {
@@ -262,20 +265,26 @@ public class MainActivity extends SimpleBaseGameActivity {
 					.setText(("Suara : " + (SaveManager.getOption("Sound") ? "Hidup"
 							: "Mati")));
 
-			backButton = new Text(30, 280, mFont, "Kembali", new TextOptions(
+			resetText = new Text(30, 240, mFont, "Reset        ", new TextOptions(
+					HorizontalAlign.LEFT), VBOManager);
+
+			backButton = new Text(30, 320, mFont, "Kembali", new TextOptions(
 					HorizontalAlign.LEFT), VBOManager);
 
 			this.attachChild(soundOption);
 			this.attachChild(backButton);
+			this.attachChild(resetText);
 			this.registerTouchArea(soundOption);
 			this.registerTouchArea(backButton);
+			this.registerTouchArea(resetText);
 		}
 
 		@Override
 		public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
+			float pX = pSceneTouchEvent.getX();
+			float pY = pSceneTouchEvent.getY();
 			if (pSceneTouchEvent.isActionDown()) {
-				if (soundOption.contains(pSceneTouchEvent.getX(),
-						pSceneTouchEvent.getY())) {
+				if (soundOption.contains(pX, pY)) {
 					SaveManager.setOption("Sound",
 							!SaveManager.getOption("Sound"));
 					if (SaveManager.getOption("Sound")) {
@@ -287,9 +296,13 @@ public class MainActivity extends SimpleBaseGameActivity {
 					}
 
 				}
-				if (backButton.contains(pSceneTouchEvent.getX(),
-						pSceneTouchEvent.getY())) {
+				if (backButton.contains(pX, pY)) {
+					resetText.setText("Reset");
 					this.back();
+				}
+				if (resetText.contains(pX, pY)) {
+					SaveManager.reset();
+					resetText.setText("Reset selesai");
 				}
 			}
 			return true;

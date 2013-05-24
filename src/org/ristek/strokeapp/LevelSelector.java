@@ -184,7 +184,7 @@ public class LevelSelector extends SimpleBaseGameActivity {
 				Toast.makeText(
 						this,
 						"Hasil : Salah, Score:"
-								+ (long) data.getDoubleExtra("gestureScore", 0),
+								+ (long)(data.getDoubleExtra("gestureScore", 0)*10),
 						Toast.LENGTH_SHORT).show();
 				gameState = STATE_LEVEL_SELECT;
 				gameLevel = 0;
@@ -221,7 +221,7 @@ public class LevelSelector extends SimpleBaseGameActivity {
 						Toast.makeText(
 								this,
 								"Hasil : Salah, Score:"
-										+ (long) data.getDoubleExtra("gestureScore", 0),
+										+ (long) (data.getDoubleExtra("gestureScore", 0)*10),
 								Toast.LENGTH_SHORT).show();
 						gameState = STATE_LEVEL_SELECT;
 						gameLevel = 0;
