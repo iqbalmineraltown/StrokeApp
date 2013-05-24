@@ -48,6 +48,12 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	private static final String[] gestureName = { "Ga", "Pa", "Da", "Ca", "Ya",
 			"Ta", "Ja", "Wa", "Ka", "Dha", "Ha", "Ma", "Sa", "Na", "Ra", "La" };
 	int gestureInt = 0;
+
+	private static final int[] LEVEL_X = { 99, 97, 225, 198, 174, 363, 469,
+			328, 672 };
+	private static final int[] LEVEL_Y = { 357, 179, 84, 203, 295, 346, 252,
+			251, 135 };
+
 	private static final int QUESTION_ACTIVITY_REQUEST = 1;
 	private static final int GESTURE_ACTIVITY_REQUEST = 2;
 
@@ -75,6 +81,8 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	private int gameState;
 	private int gameLevel;
 	private int trueAnswer;
+	private int currentLevel;
+	private long totalGestureScore;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -129,20 +137,19 @@ public class LevelSelector extends SimpleBaseGameActivity {
 					gameLevel++;
 					if (data.getBooleanExtra("QuestionResult", false))
 						trueAnswer++;
-					Intent intent = new Intent(LevelSelector.this,
-							Questions.class);
-					intent.putExtra("QuestionIndex", gameLevel - 1);
-					startActivityForResult(intent, QUESTION_ACTIVITY_REQUEST);
+					createQuestionLevel(gameLevel - 1);
 				} else {
 					if (data.getBooleanExtra("QuestionResult", false))
 						trueAnswer++;
 					Toast.makeText(
 							this,
-							"Hasil : "
-									+ ((trueAnswer == 5) ? "Benar" : "Salah"),
-							Toast.LENGTH_SHORT).show();
+							"Benar: " + trueAnswer + ", Salah: "
+									+ (5 - trueAnswer) + ", Score: "
+									+ (trueAnswer * 25), Toast.LENGTH_SHORT)
+							.show();
 					gameState = STATE_LEVEL_SELECT;
 					gameLevel = 0;
+					if(trueAnswer == 5) updateLevel(currentLevel+1);
 				}
 			} else {
 				Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
@@ -155,20 +162,70 @@ public class LevelSelector extends SimpleBaseGameActivity {
 			if (requestCode == GESTURE_ACTIVITY_REQUEST
 					&& resultCode == RESULT_OK
 					&& data.getBooleanExtra("gestureResult", false)) {
-				Toast.makeText(this, "Hasil : Benar", Toast.LENGTH_SHORT)
-						.show();
+				long currentScore = (long) (data.getDoubleExtra("gestureScore",
+						0) * 10);
+				totalGestureScore += currentScore;
+
 				if (gameLevel < 3) {
+					Toast.makeText(this,
+							"Hasil : Benar, Score:" + currentScore,
+							Toast.LENGTH_SHORT).show();
 					gameLevel++;
 					createGestureLevel(gameLevel);
 				} else {
-					Toast.makeText(
-							this,
-							"Hasil : "
-									+ (data.getBooleanExtra("gestureResult",
-											false) ? "Benar" : "Salah"),
+					Toast.makeText(this,
+							"Hasil : Benar, Total Score:" + totalGestureScore,
 							Toast.LENGTH_SHORT).show();
 					gameState = STATE_LEVEL_SELECT;
 					gameLevel = 0;
+					updateLevel(currentLevel+1);
+				}
+			} else {
+				Toast.makeText(
+						this,
+						"Hasil : Salah, Score:"
+								+ (long) data.getDoubleExtra("gestureScore", 0),
+						Toast.LENGTH_SHORT).show();
+				gameState = STATE_LEVEL_SELECT;
+				gameLevel = 0;
+			}
+		} else if (gameState == STATE_FINAL_LEVEL) {
+			if (resultCode == RESULT_OK) {
+				if (gameLevel <= 3) {
+					gameLevel++;
+					if (data.getBooleanExtra("QuestionResult", false))
+						trueAnswer++;
+					if (gameLevel <= 3)
+						createQuestionLevel(gameLevel - 1);
+					else
+						createGestureLevel(gameLevel);
+				} else {
+					long currentScore = (long) (data.getDoubleExtra(
+							"gestureScore", 0) * 10);
+					if (data.getBooleanExtra("gestureResult", false)) {
+						if (gameLevel < 6) {
+							Toast.makeText(this,
+									"Hasil : Benar, Score:" + currentScore,
+									Toast.LENGTH_SHORT).show();
+							gameLevel++;
+							createGestureLevel(gameLevel);
+						}
+						else {
+							Toast.makeText(this,
+									"Hasil : Benar, Total Score:" + totalGestureScore,
+									Toast.LENGTH_SHORT).show();
+							gameState = STATE_LEVEL_SELECT;
+							gameLevel = 0;
+						}
+					} else {
+						Toast.makeText(
+								this,
+								"Hasil : Salah, Score:"
+										+ (long) data.getDoubleExtra("gestureScore", 0),
+								Toast.LENGTH_SHORT).show();
+						gameState = STATE_LEVEL_SELECT;
+						gameLevel = 0;
+					}
 				}
 			} else {
 				Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
@@ -185,14 +242,19 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		startActivityForResult(intent, GESTURE_ACTIVITY_REQUEST);
 	}
 
+	protected void createQuestionLevel(int questionIdx) {
+		Intent intent = new Intent(LevelSelector.this, Questions.class);
+		intent.putExtra("QuestionIndex", questionIdx);
+		startActivityForResult(intent, QUESTION_ACTIVITY_REQUEST);
+	}
+
 	@Override
 	protected Scene onCreateScene() {
 		// TODO Auto-generated method stub
-		gameState = 0;
+		gameState = STATE_LEVEL_SELECT;
+		currentLevel = SaveManager.getCurrentLevel();
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		float pX = mCamera.getWidth();
-		float pY = mCamera.getHeight();
 		mMainScene = new Scene() {
 			int selection = -1;
 
@@ -202,37 +264,40 @@ public class LevelSelector extends SimpleBaseGameActivity {
 				float pY = pSceneTouchEvent.getY();
 				if (pSceneTouchEvent.isActionDown()) {
 					for (int i = 0; i < arrPost.length; i++) {
-						if (arrPost[i].contains(pX, pY)) {
+						if (arrPost[i].isVisible() && arrPost[i].contains(pX, pY)) {
 							selection = i;
 						}
 					}
 				} else if (pSceneTouchEvent.isActionUp()) {
 					for (int i = 0; i < arrPost.length; i++) {
-						if (arrPost[i].contains(pX, pY) && selection == i) {
+						if (selection == i) {
 							selection = -1;
 							if (i < 5) {
 								// Jika bagian pertanyaan
 								gameState = STATE_QUESTION_LEVEL;
 								gameLevel = 1;
 								trueAnswer = 0;
-								Intent intent = new Intent(LevelSelector.this,
-										Questions.class);
-								intent.putExtra("QuestionIndex", gameLevel - 1);
-								startActivityForResult(intent,
-										QUESTION_ACTIVITY_REQUEST);
-
-							} else {
+								createQuestionLevel(gameLevel - 1);
+							} else if (i < 8) {
 								// Jika bagian gesture
 								Collections.shuffle(Arrays.asList(gestureName));
 								gameState = STATE_GESTURE_LEVEL;
 								gameLevel = 1;
+								totalGestureScore = 0;
 								createGestureLevel(gameLevel);
+							} else {
+								Collections.shuffle(Arrays.asList(gestureName));
+								gameState = STATE_FINAL_LEVEL;
+								gameLevel = 1;
+								totalGestureScore = 0;
+								trueAnswer = 0;
+								createQuestionLevel(gameLevel - 1);
 							}
 
 						}
 					}
 				}
-				for (int i = 0; i < arrPost.length; i++) {
+				for (int i = 0; i < currentLevel; i++) {
 					arrPost[i].setVisible(i != selection);
 					arrPostPressed[i].setVisible(i == selection);
 				}
@@ -248,23 +313,33 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 		arrPost = new Sprite[POST_SUM];
 		for (int i = 0; i < arrPost.length; i++) {
-			arrPost[i] = new Sprite(100 + (i % 3) * 100, 100 + (i / 3) * 100,
-					mPostTextureRegion, getVertexBufferObjectManager());
+			arrPost[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i], mPostTextureRegion,
+					getVertexBufferObjectManager());
+			arrPost[i].setVisible(i<currentLevel);
 			mMainScene.attachChild(arrPost[i]);
 			mMainScene.registerTouchArea(arrPost[i]);
 		}
 		arrPostPressed = new Sprite[POST_SUM];
 		for (int i = 0; i < arrPostPressed.length; i++) {
-			arrPostPressed[i] = new Sprite(100 + (i % 3) * 100,
-					100 + (i / 3) * 100, mPostPressedTextureRegion,
-					getVertexBufferObjectManager());
+			arrPostPressed[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i],
+					mPostPressedTextureRegion, getVertexBufferObjectManager());
 			arrPostPressed[i].setVisible(false);
 			mMainScene.attachChild(arrPostPressed[i]);
 			mMainScene.registerTouchArea(arrPostPressed[i]);
 		}
+		updateLevel(currentLevel);
 		return mMainScene;
 	}
 
+	public void updateLevel(int curr){
+		currentLevel = curr;
+		SaveManager.setCurrentLevel(curr);
+		for (int i = 0; i < arrPost.length; i++) {
+			arrPost[i].setVisible(i<currentLevel);
+			arrPostPressed[i].setVisible(false);
+		}
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {

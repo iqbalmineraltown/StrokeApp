@@ -56,7 +56,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 	protected static final int MENU_HIGH_SCORE = 4;
 	protected static final int MENU_SUM = 5;
 	protected static final String[] MENU_FILE = { "b-start.png", "b-time.png",
-		"b-opsi.png", "b-cerita.png","b-hiscore.png"  };
+			"b-opsi.png", "b-cerita.png", "b-hiscore.png" };
 
 	// ===========================================================
 	// Fields
@@ -67,7 +67,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 	private Font mFont;
 
-	//private Music bgMusic;
+	// private Music bgMusic;
 
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
 	private ITextureRegion mBackTextureRegion;
@@ -77,6 +77,10 @@ public class MainActivity extends SimpleBaseGameActivity {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+
+	public MainActivity() {
+		super();
+	}
 
 	// ===========================================================
 	// Getter & Setter
@@ -104,7 +108,8 @@ public class MainActivity extends SimpleBaseGameActivity {
 		this.mFont = FontFactory.create(this.getFontManager(),
 				this.getTextureManager(), 256, 256,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA,
-				Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32,true,Color.WHITE_ARGB_PACKED_INT);
+				Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 32, true,
+				Color.WHITE_ARGB_PACKED_INT);
 		this.mFont.load();
 
 		// Load Images
@@ -114,7 +119,9 @@ public class MainActivity extends SimpleBaseGameActivity {
 		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(this.mBitmapTextureAtlas, this,
 						"images/l-bg.png");
-		this.mOptionTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mBitmapTextureAtlas, this, "images/opsi.png");
+		this.mOptionTextureRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mBitmapTextureAtlas, this,
+						"images/opsi.png");
 		this.mButtonTextureRegion = new ITiledTextureRegion[MENU_SUM];
 		for (int i = 0; i < mButtonTextureRegion.length; i++) {
 			mButtonTextureRegion[i] = BitmapTextureAtlasTextureRegionFactory
@@ -132,23 +139,25 @@ public class MainActivity extends SimpleBaseGameActivity {
 		}
 
 		// Load Music
-		//try {
-//			bgMusic = MusicFactory.createMusicFromAsset(
-//					mEngine.getMusicManager(), this, "music/test-music.ogg");
-//			bgMusic.setLooping(true);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		// try {
+		// bgMusic = MusicFactory.createMusicFromAsset(
+		// mEngine.getMusicManager(), this, "music/test-music.ogg");
+		// bgMusic.setLooping(true);
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 	}
 
 	@Override
 	protected Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
+		SaveManager.loadPreferences(getSharedPreferences("StrokeApp",
+				MODE_PRIVATE));
+
 		mMenuScene = new MainMenuScene();
-//		if (getSharedPreferences("StrokeAppOptions", MODE_PRIVATE).getBoolean(
-//				"SoundOn", true))
-//			bgMusic.play();
+		// if (SaveManager.getOption("Sound"))
+		// bgMusic.play();
 		return mMenuScene;
 	}
 
@@ -199,12 +208,20 @@ public class MainActivity extends SimpleBaseGameActivity {
 			} else if (pSceneTouchEvent.isActionUp()) {
 				for (int i = 0; i < menuButtons.length; i++) {
 					if (menuButtons[i].contains(pSceneTouchEvent.getX(),
-							pSceneTouchEvent.getY()) && menuButtons[i].getCurrentTileIndex() == 1) {
-						
+							pSceneTouchEvent.getY())
+							&& menuButtons[i].getCurrentTileIndex() == 1) {
+
 						if (i == MENU_START) {
-							Intent intent = new Intent(MainActivity.this,
-									OpeningActivity.class);
-							startActivity(intent);
+							if (SaveManager.getOption("Story")) {
+								SaveManager.setOption("Story", false);
+								Intent intent = new Intent(MainActivity.this,
+										OpeningActivity.class);
+								startActivity(intent);
+							} else {
+								Intent intent = new Intent(MainActivity.this,
+										LevelSelector.class);
+								startActivity(intent);
+							}
 						} else if (i == MENU_TIME_TRIAL) {
 							// TODO Time Trial
 						} else if (i == MENU_HIGH_SCORE) {
@@ -234,19 +251,19 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 		public OptionsScene() {
 			this.setBackgroundEnabled(false);
-			this.attachChild(new Sprite(0, 0,
-					mOptionTextureRegion, getVertexBufferObjectManager()));
+			this.attachChild(new Sprite(0, 0, mOptionTextureRegion,
+					getVertexBufferObjectManager()));
 			final VertexBufferObjectManager VBOManager = MainActivity.this
 					.getVertexBufferObjectManager();
 
 			soundOption = new Text(30, 200, mFont, "Suara : -----",
 					new TextOptions(HorizontalAlign.LEFT), VBOManager);
-			soundOption.setText(("Suara : " + ((getSharedPreferences(
-					"StrokeAppOptions", MODE_PRIVATE).getBoolean("SoundOn",
-					true)) ? "Hidup" : "Mati")));
+			soundOption
+					.setText(("Suara : " + (SaveManager.getOption("Sound") ? "Hidup"
+							: "Mati")));
 
-			backButton = new Text(30, 280, mFont, "Kembali",
-					new TextOptions(HorizontalAlign.LEFT), VBOManager);
+			backButton = new Text(30, 280, mFont, "Kembali", new TextOptions(
+					HorizontalAlign.LEFT), VBOManager);
 
 			this.attachChild(soundOption);
 			this.attachChild(backButton);
@@ -259,20 +276,14 @@ public class MainActivity extends SimpleBaseGameActivity {
 			if (pSceneTouchEvent.isActionDown()) {
 				if (soundOption.contains(pSceneTouchEvent.getX(),
 						pSceneTouchEvent.getY())) {
-					boolean isSoundOn = getSharedPreferences(
-							"StrokeAppOptions", MODE_PRIVATE).getBoolean(
-							"SoundOn", true);
-					Editor edit = getSharedPreferences("StrokeAppOptions",
-							MODE_PRIVATE).edit();
-					edit.putBoolean("SoundOn", !isSoundOn);
-					edit.commit();
-					if (getSharedPreferences("StrokeAppOptions", MODE_PRIVATE)
-							.getBoolean("SoundOn", true)) {
+					SaveManager.setOption("Sound",
+							!SaveManager.getOption("Sound"));
+					if (SaveManager.getOption("Sound")) {
 						soundOption.setText("Suara : Hidup");
-//						bgMusic.play();
+						// bgMusic.play();
 					} else {
 						soundOption.setText("Suara : Mati");
-//						bgMusic.pause();
+						// bgMusic.pause();
 					}
 
 				}

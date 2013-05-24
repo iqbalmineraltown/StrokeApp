@@ -9,11 +9,19 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class StrokeFact extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		/* remove title bar and notification bar */
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		/* end remove title bar and notification bar */
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fact_page);
 		MyPagerAdapter adapter = new MyPagerAdapter();

@@ -101,11 +101,15 @@ public class Questions extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				int answer = 0;
+				for (int i = 0; i < questionButton.length; i++) {
+					if(questionButton[i].isChecked()) answer = i; 
+				}
 				Intent resultIntent = new Intent();
 				resultIntent
 						.putExtra(
 								"QuestionResult",
-								(questionGroup.getCheckedRadioButtonId() == questionList[questionId].trueAnswer));
+								(answer == questionList[questionId].trueAnswer));
 				setResult(RESULT_OK, resultIntent);
 				finish();
 			}
