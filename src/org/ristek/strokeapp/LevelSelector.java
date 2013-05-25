@@ -8,13 +8,9 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.entity.text.Text;
-import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
@@ -28,11 +24,9 @@ import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtla
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
-import org.andengine.util.HorizontalAlign;
 import org.andengine.util.debug.Debug;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.KeyEvent;
 import android.widget.Toast;
@@ -47,7 +41,6 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	private static final int CAMERA_HEIGHT = 480;
 	private static final String[] gestureName = { "Ga", "Pa", "Da", "Ca", "Ya",
 			"Ta", "Ja", "Wa", "Ka", "Dha", "Ha", "Ma", "Sa", "Na", "Ra", "La" };
-	int gestureInt = 0;
 
 	private static final int[] LEVEL_X = { 99, 97, 225, 198, 174, 363, 469,
 			328, 672 };
@@ -69,7 +62,6 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	// ===========================================================
 
 	protected Camera mCamera;
-	protected Rectangle mMap;
 	protected Sprite[] arrPost;
 	protected Sprite[] arrPostPressed;
 	protected Scene mMainScene;
@@ -149,7 +141,8 @@ public class LevelSelector extends SimpleBaseGameActivity {
 							.show();
 					gameState = STATE_LEVEL_SELECT;
 					gameLevel = 0;
-					if(trueAnswer == 5) updateLevel(currentLevel+1);
+					if (trueAnswer == 5)
+						updateLevel(currentLevel + 1);
 				}
 			} else {
 				Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
@@ -178,13 +171,14 @@ public class LevelSelector extends SimpleBaseGameActivity {
 							Toast.LENGTH_SHORT).show();
 					gameState = STATE_LEVEL_SELECT;
 					gameLevel = 0;
-					updateLevel(currentLevel+1);
+					updateLevel(currentLevel + 1);
 				}
 			} else {
 				Toast.makeText(
 						this,
 						"Hasil : Salah, Score:"
-								+ (long)(data.getDoubleExtra("gestureScore", 0)*10),
+								+ (long) (data
+										.getDoubleExtra("gestureScore", 0) * 10),
 						Toast.LENGTH_SHORT).show();
 				gameState = STATE_LEVEL_SELECT;
 				gameLevel = 0;
@@ -209,10 +203,11 @@ public class LevelSelector extends SimpleBaseGameActivity {
 									Toast.LENGTH_SHORT).show();
 							gameLevel++;
 							createGestureLevel(gameLevel);
-						}
-						else {
-							Toast.makeText(this,
-									"Hasil : Benar, Total Score:" + totalGestureScore,
+						} else {
+							Toast.makeText(
+									this,
+									"Hasil : Benar, Total Score:"
+											+ totalGestureScore,
 									Toast.LENGTH_SHORT).show();
 							gameState = STATE_LEVEL_SELECT;
 							gameLevel = 0;
@@ -221,7 +216,8 @@ public class LevelSelector extends SimpleBaseGameActivity {
 						Toast.makeText(
 								this,
 								"Hasil : Salah, Score:"
-										+ (long) (data.getDoubleExtra("gestureScore", 0)*10),
+										+ (long) (data.getDoubleExtra(
+												"gestureScore", 0) * 10),
 								Toast.LENGTH_SHORT).show();
 						gameState = STATE_LEVEL_SELECT;
 						gameLevel = 0;
@@ -264,7 +260,8 @@ public class LevelSelector extends SimpleBaseGameActivity {
 				float pY = pSceneTouchEvent.getY();
 				if (pSceneTouchEvent.isActionDown()) {
 					for (int i = 0; i < arrPost.length; i++) {
-						if (arrPost[i].isVisible() && arrPost[i].contains(pX, pY)) {
+						if (arrPost[i].isVisible()
+								&& arrPost[i].contains(pX, pY)) {
 							selection = i;
 						}
 					}
@@ -297,9 +294,10 @@ public class LevelSelector extends SimpleBaseGameActivity {
 						}
 					}
 				}
-				for (int i = 0; i < currentLevel; i++) {
-					arrPost[i].setVisible(i != selection);
-					arrPostPressed[i].setVisible(i == selection);
+				updateLevel(currentLevel);
+				if (selection >= 0) {
+					arrPost[selection].setVisible(false);
+					arrPostPressed[selection].setVisible(true);
 				}
 				return super.onSceneTouchEvent(pSceneTouchEvent);
 			}
@@ -315,7 +313,7 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		for (int i = 0; i < arrPost.length; i++) {
 			arrPost[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i], mPostTextureRegion,
 					getVertexBufferObjectManager());
-			arrPost[i].setVisible(i<currentLevel);
+			arrPost[i].setVisible(i < currentLevel);
 			mMainScene.attachChild(arrPost[i]);
 			mMainScene.registerTouchArea(arrPost[i]);
 		}
@@ -331,15 +329,15 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		return mMainScene;
 	}
 
-	public void updateLevel(int curr){
+	public void updateLevel(int curr) {
 		currentLevel = curr;
 		SaveManager.setCurrentLevel(curr);
 		for (int i = 0; i < arrPost.length; i++) {
-			arrPost[i].setVisible(i<currentLevel);
-			arrPostPressed[i].setVisible(false);
+			arrPost[i].setVisible(i == currentLevel - 1);
+			arrPostPressed[i].setVisible(i < currentLevel - 1);
 		}
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
