@@ -5,48 +5,59 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:background="@drawable/trace"
+    android:baselineAligned="false"
     tools:context=".GestureActivity" >
 
         <LinearLayout
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.19"
-            android:orientation="vertical" >
+            android:layout_weight="0.20"
+            android:orientation="vertical"
+            android:gravity="bottom"
+            android:paddingBottom="25dp">
 
-        <Button
+            <Button
+                android:id="@+id/buttonClear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/delete" />
+
+            <Button
             android:id="@+id/buttonSubmit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/finish" />
 
-        <Button
-            android:id="@+id/buttonClear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/delete" />
-    </LinearLayout>
-    
-    <android.gesture.GestureOverlayView
-        android:id="@+id/gestureOverlayView1"
+        </LinearLayout>
+
+    <FrameLayout
         android:layout_width="0dip"
-        android:layout_height="match_parent"
-        android:layout_weight="0.81"
-        android:gestureColor="#00bfff"
-        android:gestureStrokeType="multiple"
-        android:paddingBottom="30dp"
-        android:paddingLeft="60dp"
-        android:paddingRight="50dp"
-        android:paddingTop="30dp"
-        android:uncertainGestureColor="#87ceeb" >
+        android:layout_height="fill_parent"
+        android:layout_weight="0.80">
 
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_launcher" />
+        <android.gesture.GestureOverlayView
+            android:id="@+id/gestureOverlayView1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.81"
+            android:gestureColor="#00bfff"
+            android:gestureStrokeType="multiple"
+            android:uncertainGestureColor="#87ceeb"
+            android:layout_marginTop="@dimen/gesture_top_margin"
+            android:layout_marginBottom="@dimen/gesture_bottom_margin"
+            android:layout_marginRight="@dimen/gesture_right_margin"
+            android:layout_marginLeft="@dimen/gesture_left_margin"
+            android:layout_gravity="center_horizontal">
 
-    </android.gesture.GestureOverlayView>
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_launcher"
+                android:contentDescription="@string/title_activity_gesture"/>
+
+        </android.gesture.GestureOverlayView>
+    </FrameLayout>
 
 
-    
 </LinearLayout>

@@ -1,14 +1,8 @@
 package org.ristek.strokeapp;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.gesture.Gesture;
-import android.gesture.GestureLibraries;
-import android.gesture.GestureLibrary;
-import android.gesture.GestureOverlayView;
-import android.gesture.Prediction;
+import android.gesture.*;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import java.util.ArrayList;
 
 public class GestureActivity extends Activity {
 
@@ -49,7 +45,7 @@ public class GestureActivity extends Activity {
 //			e.printStackTrace();
 //		}
 		Bitmap gestureImage = gestureLib.getGestures(gestureName).get(0)
-				.toBitmap(800, 480, 20, 100, Color.RED);
+				.toBitmap(400, 240, 20, 100, Color.RED);
 		image.setImageBitmap(gestureImage);
 
 		final GestureOverlayView gestureOverlay = (GestureOverlayView) findViewById(R.id.gestureOverlayView1);
