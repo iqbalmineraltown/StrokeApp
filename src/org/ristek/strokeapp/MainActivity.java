@@ -1,15 +1,6 @@
 package org.ristek.strokeapp;
 
-import java.io.IOException;
-
-import org.andengine.audio.music.Music;
-import org.andengine.audio.music.MusicFactory;
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.options.EngineOptions;
-import org.andengine.engine.options.ScreenOrientation;
-import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
-import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -21,35 +12,19 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
-import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
-import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
-import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.ITiledTextureRegion;
-import org.andengine.opengl.texture.region.TextureRegion;
+import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
-import org.andengine.util.debug.Debug;
 
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
-import android.os.Looper;
-import android.widget.Toast;
 
-public class MainActivity extends SimpleBaseGameActivity {
+public class MainActivity extends BaseStrokeClinicActivity {
 
 	// ===========================================================
 	// Constants
 	// ===========================================================
-
-	private static final int CAMERA_WIDTH = 800;
-	private static final int CAMERA_HEIGHT = 480;
 
 	protected static final int MENU_START = 0;
 	protected static final int MENU_TIME_TRIAL = 1;
@@ -57,8 +32,9 @@ public class MainActivity extends SimpleBaseGameActivity {
 	protected static final int MENU_STROKE_STORY = 3;
 	protected static final int MENU_HIGH_SCORE = 4;
 	protected static final int MENU_SUM = 5;
-	protected static final String[] MENU_FILE = { "b-start.png", "b-time.png",
-			"b-opsi.png", "b-cerita.png", "b-hiscore.png" };
+	protected static final String[] tiledTextureName = { "b-start", "b-time",
+			"b-opsi", "b-cerita", "b-hiscore" };
+	protected static final String[] textureName = { "l-bg", "opsi" };
 
 	// ===========================================================
 	// Fields
@@ -70,11 +46,6 @@ public class MainActivity extends SimpleBaseGameActivity {
 	private Font mFont;
 
 	// private Music bgMusic;
-
-	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
-	private ITextureRegion mBackTextureRegion;
-	private ITextureRegion mOptionTextureRegion;
-	private ITiledTextureRegion[] mButtonTextureRegion;
 
 	// ===========================================================
 	// Constructors
@@ -93,18 +64,6 @@ public class MainActivity extends SimpleBaseGameActivity {
 	// ===========================================================
 
 	@Override
-	public EngineOptions onCreateEngineOptions() {
-		this.mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		final FillResolutionPolicy resolutionPolicy = new FillResolutionPolicy();
-
-		EngineOptions engineOption = new EngineOptions(true,
-				ScreenOrientation.LANDSCAPE_FIXED, resolutionPolicy, mCamera);
-		engineOption.getAudioOptions().setNeedsMusic(true);
-
-		return engineOption;
-	}
-
-	@Override
 	protected void onCreateResources() {
 		// Load Font
 		this.mFont = FontFactory.create(this.getFontManager(),
@@ -114,31 +73,10 @@ public class MainActivity extends SimpleBaseGameActivity {
 				Color.WHITE_ARGB_PACKED_INT);
 		this.mFont.load();
 
-		// Load Images
-		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
-				this.getTextureManager(), 1024, 1024,
-				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mBitmapTextureAtlas, this,
-						"images/l-bg.png");
-		this.mOptionTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mBitmapTextureAtlas, this,
-						"images/opsi.png");
-		this.mButtonTextureRegion = new ITiledTextureRegion[MENU_SUM];
-		for (int i = 0; i < mButtonTextureRegion.length; i++) {
-			mButtonTextureRegion[i] = BitmapTextureAtlasTextureRegionFactory
-					.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-							"images/" + MENU_FILE[i], 2, 1);
-		}
-
-		try {
-			this.mBitmapTextureAtlas
-					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
-							0, 0, 1));
-			this.mBitmapTextureAtlas.load();
-		} catch (TextureAtlasBuilderException e) {
-			Debug.e(e);
-		}
+		this.createTextureAtlas(2048, 1024);
+		this.loadTexture(textureName);
+		this.loadTiledTexture(tiledTextureName, 2, 1);
+		this.buildTextureAtlas();
 
 		// Load Music
 		// try {
@@ -178,17 +116,19 @@ public class MainActivity extends SimpleBaseGameActivity {
 		final OptionsScene optionScene;
 
 		public MainMenuScene() {
-			this.setBackground(new SpriteBackground(new Sprite(0, 0,
-					mBackTextureRegion, getVertexBufferObjectManager())));
 
 			final VertexBufferObjectManager VBOManager = MainActivity.this
 					.getVertexBufferObjectManager();
+
+			this.setBackground(new SpriteBackground(new Sprite(0, 0,
+					getTR("l-bg"), VBOManager)));
 
 			menuButtons = new TiledSprite[MENU_SUM];
 
 			for (int i = 0; i < menuButtons.length; i++) {
 				menuButtons[i] = new TiledSprite(BUTTON_X[i], BUTTON_Y[i],
-						mButtonTextureRegion[i], VBOManager);
+						(TiledTextureRegion) getTR(tiledTextureName[i]),
+						VBOManager);
 
 				this.attachChild(menuButtons[i]);
 				this.registerTouchArea(menuButtons[i]);
@@ -254,7 +194,7 @@ public class MainActivity extends SimpleBaseGameActivity {
 
 		public OptionsScene() {
 			this.setBackgroundEnabled(false);
-			this.attachChild(new Sprite(0, 0, mOptionTextureRegion,
+			this.attachChild(new Sprite(0, 0, getTR("opsi"),
 					getVertexBufferObjectManager()));
 			final VertexBufferObjectManager VBOManager = MainActivity.this
 					.getVertexBufferObjectManager();
@@ -265,8 +205,8 @@ public class MainActivity extends SimpleBaseGameActivity {
 					.setText(("Suara : " + (SaveManager.getOption("Sound") ? "Hidup"
 							: "Mati")));
 
-			resetText = new Text(30, 240, mFont, "Reset        ", new TextOptions(
-					HorizontalAlign.LEFT), VBOManager);
+			resetText = new Text(30, 240, mFont, "Reset        ",
+					new TextOptions(HorizontalAlign.LEFT), VBOManager);
 
 			backButton = new Text(30, 320, mFont, "Kembali", new TextOptions(
 					HorizontalAlign.LEFT), VBOManager);

@@ -1,97 +1,45 @@
 package org.ristek.strokeapp;
 
-import org.andengine.engine.camera.Camera;
-import org.andengine.engine.options.EngineOptions;
-import org.andengine.engine.options.ScreenOrientation;
-import org.andengine.engine.options.WakeLockOptions;
-import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.entity.text.Text;
-import org.andengine.entity.text.TextOptions;
-import org.andengine.input.touch.TouchEvent;
-import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
-import org.andengine.opengl.texture.ITexture;
-import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
-import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
-import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
-import org.andengine.opengl.texture.region.TextureRegion;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
-import org.andengine.util.HorizontalAlign;
-import org.andengine.util.debug.Debug;
-
-import android.graphics.Color;
 
 
 
 
 
-public class HighScoreScreen extends SimpleBaseGameActivity{
-
-	private final int CAMERA_WIDTH = 800;
-	private final int CAMERA_HEIGHT = 480;
+public class HighScoreScreen extends BaseStrokeClinicActivity{
+	
+	private final static String[] textureName = {"hiscore-bg"};
 	
 	private Scene mScene;
-	private Camera mCamera;
-	private ITexture mFontTexture1;
-	private ITexture mFontTexture2;
-	private Font mFont1;
-	private Font mFont2;
-	private Text centerText;
-	private Text back;
+//	private ITexture mFontTexture1;
+//	private ITexture mFontTexture2;
+//	private Font mFont1;
+//	private Font mFont2;
+//	private Text centerText;
+//	private Text back;
 	//private TextureRegion mRoundedRect;
-	private Sprite mRect;
-	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
-	private TextureRegion mBackTextureRegion;
-	@Override
-	public EngineOptions onCreateEngineOptions() {
-		// TODO Auto-generated method stub
-		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		
-		EngineOptions engine = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(), mCamera);
-		engine.setWakeLockOptions(WakeLockOptions.SCREEN_ON);
-		return engine;
-	}
+//	private Sprite mRect;
 
 	
 	@Override
 	protected void onCreateResources() {
-		// TODO Auto-generated method stub
 		FontFactory.setAssetBasePath("fonts/");
 		
 		
 		
-		mFontTexture1 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
-		mFontTexture2 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
-		mFont1 = FontFactory.createFromAsset(this.getFontManager(), mFontTexture1, this.getAssets(), "VintageOne.ttf", 32f, true, Color.BLACK);
-		mFont2 = FontFactory.createFromAsset(this.getFontManager(), mFontTexture2, this.getAssets(), "VintageOne.ttf", 32f, true, Color.RED);
-		this.mFont1.load();
-		this.mFont2.load();
+//		mFontTexture1 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
+//		mFontTexture2 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
+//		mFont1 = FontFactory.createFromAsset(this.getFontManager(), mFontTexture1, this.getAssets(), "VintageOne.ttf", 32f, true, Color.BLACK);
+//		mFont2 = FontFactory.createFromAsset(this.getFontManager(), mFontTexture2, this.getAssets(), "VintageOne.ttf", 32f, true, Color.RED);
+//		this.mFont1.load();
+//		this.mFont2.load();
 		
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("images/");
-		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
-				this.getTextureManager(), 1024, 1024,
-				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mBitmapTextureAtlas, this,
-						"hiscore.png");
-		//mRoundedRect = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this , "rounded_rect.png", 0,0);
-		try {
-			this.mBitmapTextureAtlas
-					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
-							0, 0, 1));
-			this.mBitmapTextureAtlas.load();
-		} catch (TextureAtlasBuilderException e) {
-			Debug.e(e);
-		}
-		
+		this.createTextureAtlas(1024, 1024);
+		this.loadTexture(textureName);
+		this.buildTextureAtlas();
 		
 		
 	}
@@ -103,7 +51,7 @@ public class HighScoreScreen extends SimpleBaseGameActivity{
 		//float pX = mCamera.getWidth()/2-mRoundedRect.getWidth()/2; 
 		mScene = new Scene();
 		mScene.setBackground(new SpriteBackground(new Sprite(0, 0,
-				mBackTextureRegion, getVertexBufferObjectManager())));
+				getTR("hiscore-bg"), getVertexBufferObjectManager())));
 		
 	//	this.centerText = new Text(300, 40, this.mFont1, " High Score ", 
 		//		new TextOptions(HorizontalAlign.LEFT), this.getVertexBufferObjectManager());

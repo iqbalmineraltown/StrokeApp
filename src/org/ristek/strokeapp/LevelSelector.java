@@ -4,10 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.options.EngineOptions;
-import org.andengine.engine.options.ScreenOrientation;
-import org.andengine.engine.options.WakeLockOptions;
-import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -15,30 +11,22 @@ import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
-import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
-import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
-import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
-import org.andengine.opengl.texture.region.TextureRegion;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
-import org.andengine.util.debug.Debug;
 
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-public class LevelSelector extends SimpleBaseGameActivity {
+public class LevelSelector extends BaseStrokeClinicActivity {
 
 	// ===========================================================
 	// Constants
 	// ===========================================================
 
-	private static final int CAMERA_WIDTH = 800;
-	private static final int CAMERA_HEIGHT = 480;
+	private static final String[] textureName = { "map", "i-pos", "i-pos-off",
+			"i-pass", "i-1", "i-2", "i-3", "i-4", "i-5", "i-6", "i-7", "i-8",
+			"i-level1", "i-level2", "i-level3" };
+
 	private static final String[] gestureName = { "Ga", "Pa", "Da", "Ca", "Ya",
 			"Ta", "Ja", "Wa", "Ka", "Dha", "Ha", "Ma", "Sa", "Na", "Ra", "La" };
 
@@ -46,6 +34,10 @@ public class LevelSelector extends SimpleBaseGameActivity {
 			328, 672 };
 	private static final int[] LEVEL_Y = { 357, 179, 84, 203, 295, 346, 252,
 			251, 135 };
+	private static final int[] ROUTE_X = { 122, 122, 180, 193, 209, 389, 353,
+			353 };
+	private static final int[] ROUTE_Y = { 204, 104, 109, 228, 320, 277, 271,
+			155 };
 
 	private static final int QUESTION_ACTIVITY_REQUEST = 1;
 	private static final int GESTURE_ACTIVITY_REQUEST = 2;
@@ -63,13 +55,11 @@ public class LevelSelector extends SimpleBaseGameActivity {
 
 	protected Camera mCamera;
 	protected Sprite[] arrPost;
-	protected Sprite[] arrPostPressed;
+	protected Sprite[] arrPostOff;
+	protected Sprite[] arrPostWin;
+	protected Sprite[] route;
 	protected Scene mMainScene;
 	protected Font mFont;
-	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
-	private TextureRegion mBackTextureRegion;
-	private TextureRegion mPostTextureRegion;
-	private TextureRegion mPostPressedTextureRegion;
 	private int gameState;
 	private int gameLevel;
 	private int trueAnswer;
@@ -77,47 +67,16 @@ public class LevelSelector extends SimpleBaseGameActivity {
 	private long totalGestureScore;
 
 	@Override
-	public EngineOptions onCreateEngineOptions() {
-		// TODO Auto-generated method stub
-		this.mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		EngineOptions engine = new EngineOptions(true,
-				ScreenOrientation.LANDSCAPE_FIXED, new FillResolutionPolicy(),
-				mCamera);
-
-		engine.setWakeLockOptions(WakeLockOptions.SCREEN_ON);
-
-		return engine;
-	}
-
-	@Override
 	protected void onCreateResources() {
 		// TODO Auto-generated method stub
-		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
-				this.getTextureManager(), 1024, 1024,
-				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		this.mBackTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mBitmapTextureAtlas, this,
-						"images/map.png");
-		this.mPostTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mBitmapTextureAtlas, this,
-						"images/i-pos.png");
-		this.mPostPressedTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mBitmapTextureAtlas, this,
-						"images/i-pass.png");
 		this.mFont = FontFactory.create(this.getFontManager(),
 				this.getTextureManager(), 256, 256,
 				Typeface.create(Typeface.DEFAULT, Typeface.ITALIC), 32);
-
 		this.mFont.load();
 
-		try {
-			this.mBitmapTextureAtlas
-					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
-							0, 0, 1));
-			this.mBitmapTextureAtlas.load();
-		} catch (TextureAtlasBuilderException e) {
-			Debug.e(e);
-		}
+		this.createTextureAtlas(2048, 1024);
+		this.loadTexture(textureName);
+		this.buildTextureAtlas();
 	}
 
 	@Override
@@ -297,33 +256,40 @@ public class LevelSelector extends SimpleBaseGameActivity {
 				updateLevel(currentLevel);
 				if (selection >= 0) {
 					arrPost[selection].setVisible(false);
-					arrPostPressed[selection].setVisible(true);
+					arrPostWin[selection].setVisible(true);
 				}
 				return super.onSceneTouchEvent(pSceneTouchEvent);
 			}
 		};
 		mMainScene.setBackground(new SpriteBackground(new Sprite(0, 0,
-				mBackTextureRegion, getVertexBufferObjectManager())));
+				getTR("map"), getVertexBufferObjectManager())));
 
-		// mMap = new Rectangle(pX / 8, pY / 8, 3 * pX / 4, 3 * pY / 4,
-		// getVertexBufferObjectManager());
-		// mMap.setColor(100, 100, 100);
+		route = new Sprite[POST_SUM - 1];
+		for (int i = 0; i < route.length; i++) {
+			route[i] = new Sprite(ROUTE_X[i], ROUTE_Y[i],
+					getTR("i-" + (i + 1)), getVertexBufferObjectManager());
+			mMainScene.attachChild(route[i]);
+		}
 
 		arrPost = new Sprite[POST_SUM];
 		for (int i = 0; i < arrPost.length; i++) {
-			arrPost[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i], mPostTextureRegion,
+			arrPost[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i], getTR("i-pos"),
 					getVertexBufferObjectManager());
-			arrPost[i].setVisible(i < currentLevel);
 			mMainScene.attachChild(arrPost[i]);
 			mMainScene.registerTouchArea(arrPost[i]);
 		}
-		arrPostPressed = new Sprite[POST_SUM];
-		for (int i = 0; i < arrPostPressed.length; i++) {
-			arrPostPressed[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i],
-					mPostPressedTextureRegion, getVertexBufferObjectManager());
-			arrPostPressed[i].setVisible(false);
-			mMainScene.attachChild(arrPostPressed[i]);
-			mMainScene.registerTouchArea(arrPostPressed[i]);
+		arrPostWin = new Sprite[POST_SUM];
+		for (int i = 0; i < arrPostWin.length; i++) {
+			arrPostWin[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i], getTR("i-pass"),
+					getVertexBufferObjectManager());
+			mMainScene.attachChild(arrPostWin[i]);
+			mMainScene.registerTouchArea(arrPostWin[i]);
+		}
+		arrPostOff = new Sprite[POST_SUM];
+		for (int i = 0; i < arrPostOff.length; i++) {
+			arrPostOff[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i],
+					getTR("i-pos-off"), getVertexBufferObjectManager());
+			mMainScene.attachChild(arrPostOff[i]);
 		}
 		updateLevel(currentLevel);
 		return mMainScene;
@@ -334,7 +300,8 @@ public class LevelSelector extends SimpleBaseGameActivity {
 		SaveManager.setCurrentLevel(curr);
 		for (int i = 0; i < arrPost.length; i++) {
 			arrPost[i].setVisible(i == currentLevel - 1);
-			arrPostPressed[i].setVisible(i < currentLevel - 1);
+			arrPostWin[i].setVisible(i < currentLevel - 1);
+			arrPostOff[i].setVisible(i > currentLevel - 1);
 		}
 	}
 

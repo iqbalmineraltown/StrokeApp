@@ -5,30 +5,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Questions extends Activity {
 
 	private TextView questionText;
 	private Button submitButton;
-	private RadioGroup questionGroup;
 	private RadioButton[] questionButton;
 	private int questionId;
 	private static Question[] questionList;
@@ -94,7 +85,6 @@ public class Questions extends Activity {
 
 	public void addListenerOnButton() {
 
-		questionGroup = (RadioGroup) findViewById(R.id.RadioGroup1);
 		submitButton = (Button) findViewById(R.id.button1);
 
 		OnClickListener clicked = new OnClickListener() {
