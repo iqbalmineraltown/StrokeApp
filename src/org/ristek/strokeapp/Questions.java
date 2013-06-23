@@ -1,9 +1,5 @@
 package org.ristek.strokeapp;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +11,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Questions extends Activity {
 
@@ -24,25 +31,41 @@ public class Questions extends Activity {
 	private int questionId;
 	private static Question[] questionList;
 
+    private String readInput(InputStream in) throws IOException {
+        BufferedReader reader = new BufferedReader( new InputStreamReader(in));
+        String         line;
+        StringBuilder  stringBuilder = new StringBuilder();
+        String         ls = System.getProperty("line.separator");
+
+        while( ( line = reader.readLine() ) != null ) {
+            stringBuilder.append( line );
+            stringBuilder.append( ls );
+        }
+
+        return stringBuilder.toString();
+    }
+
 	protected void loadQuestion() {
 		try {
-			BufferedReader file = new BufferedReader(new InputStreamReader(
-					getAssets().open("question.txt")));
-			int sum = Integer.parseInt(file.readLine());
-			questionList = new Question[sum];
-			for (int i = 0; i < sum; i++) {
-				questionList[i] = new Question(file.readLine(),
-						file.readLine(), file.readLine(), file.readLine(),
-						file.readLine(), file.readLine(), Integer.parseInt(file
-								.readLine()));
-			}
-			file.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            // mengambil isi questions.json
+            String content = readInput(getAssets().open("questions.json"));
+            JSONArray qArray = (JSONArray) new JSONTokener(content).nextValue();
 
-	}
+            questionList = new Question[qArray.length()];
+            for (int i=0; i < questionList.length; i++){
+                JSONObject q = qArray.getJSONObject(i);
+                JSONArray opt = q.optJSONArray("options");
+                questionList[i] = new Question(q.getString("question"),
+                        opt.getString(0),opt.getString(1),opt.getString(2),opt.getString(3),opt.getString(4),
+                        q.getInt("answer-index"));
+            }
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +77,7 @@ public class Questions extends Activity {
 
 		if (questionList == null)
 			loadQuestion();
-		// TODO Auto-generated method stub
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.question_page);
 		// setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -68,6 +91,12 @@ public class Questions extends Activity {
 		questionButton[4] = (RadioButton) findViewById(R.id.radio4);
 
 		questionId = getIntent().getIntExtra("QuestionIndex", 0);
+
+        // Jika merupakan pertanyaan pertama maka shuffle pertanyaan
+        if(questionId == 0){
+            Collections.shuffle(Arrays.asList(questionList));
+        }
+
 		questionText.setText(questionList[questionId].question);
 		for (int i = 0; i < questionButton.length; i++) {
 			questionButton[i].setText(questionList[questionId].answer[i]);

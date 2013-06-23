@@ -1,8 +1,9 @@
 package org.ristek.strokeapp;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.view.KeyEvent;
+import android.widget.Toast;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
@@ -12,10 +13,8 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.view.KeyEvent;
-import android.widget.Toast;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class LevelSelector extends BaseStrokeClinicActivity {
 
@@ -166,7 +165,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
 							Toast.makeText(
 									this,
 									"Hasil : Benar, Total Score:"
-											+ totalGestureScore,
+											+ (totalGestureScore+(trueAnswer * 25)),
 									Toast.LENGTH_SHORT).show();
 							gameState = STATE_LEVEL_SELECT;
 							gameLevel = 0;

@@ -1,6 +1,7 @@
 package org.ristek.strokeapp;
 
-import org.andengine.engine.camera.Camera;
+import android.content.Intent;
+import android.graphics.Typeface;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -16,9 +17,6 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
-
-import android.content.Intent;
-import android.graphics.Typeface;
 
 public class MainActivity extends BaseStrokeClinicActivity {
 
@@ -40,7 +38,6 @@ public class MainActivity extends BaseStrokeClinicActivity {
 	// Fields
 	// ===========================================================
 
-	protected Camera mCamera;
 	protected Scene mMenuScene;
 
 	private Font mFont;
