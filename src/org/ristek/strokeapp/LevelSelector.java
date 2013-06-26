@@ -2,7 +2,6 @@ package org.ristek.strokeapp;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.view.KeyEvent;
 import android.widget.Toast;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
@@ -39,6 +38,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
 
     private static final int QUESTION_ACTIVITY_REQUEST = 1;
     private static final int GESTURE_ACTIVITY_REQUEST = 2;
+    private static final int FINAL_RESULT_REQUEST = 3;
 
     private static final int POST_SUM = 9;
 
@@ -78,6 +78,14 @@ public class LevelSelector extends BaseStrokeClinicActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FINAL_RESULT_REQUEST) {
+            SaveManager.addTotalScoreToHighScore();
+            SaveManager.reset();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return;
+        }
         if (gameState == STATE_QUESTION_LEVEL) {
             if (requestCode == QUESTION_ACTIVITY_REQUEST
                     && resultCode == RESULT_OK) {
@@ -89,20 +97,16 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 } else {
                     if (data.getBooleanExtra("QuestionResult", false))
                         trueAnswer++;
-                    Toast.makeText(
-                            this,
-                            "Benar: " + trueAnswer + ", Salah: "
-                                    + (5 - trueAnswer) + ", Score Akhir: "
-                                    + (trueAnswer * 25), Toast.LENGTH_SHORT)
-                            .show();
+                    this.showResultScreen(trueAnswer >= 4, trueAnswer * 25);
                     gameState = STATE_LEVEL_SELECT;
                     gameLevel = 0;
-                    if (trueAnswer == 5)
+                    if (trueAnswer >= 4) {
                         updateLevel(currentLevel + 1);
+                        SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25);
+                    }
                 }
             } else {
-                Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
-                        .show();
+                this.showResultScreen(false, trueAnswer * 25);
                 gameState = STATE_LEVEL_SELECT;
                 gameLevel = 0;
             }
@@ -122,19 +126,14 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                     gameLevel++;
                     createGestureLevel(gameLevel);
                 } else {
-                    Toast.makeText(this,
-                            "Hasil : Benar, Total Score:" + totalGestureScore,
-                            Toast.LENGTH_SHORT).show();
+                    this.showResultScreen(true, totalGestureScore);
+                    SaveManager.setTotalScore(SaveManager.getTotalScore() + totalGestureScore);
                     gameState = STATE_LEVEL_SELECT;
                     gameLevel = 0;
                     updateLevel(currentLevel + 1);
                 }
             } else {
-                Toast.makeText(
-                        this,
-                        "Hasil : Salah, Score Akhir:"
-                                + totalGestureScore,
-                        Toast.LENGTH_SHORT).show();
+                this.showResultScreen(false, totalGestureScore);
                 gameState = STATE_LEVEL_SELECT;
                 gameLevel = 0;
             }
@@ -142,8 +141,9 @@ public class LevelSelector extends BaseStrokeClinicActivity {
             if (resultCode == RESULT_OK) {
                 if (gameLevel <= 3) {
                     gameLevel++;
-                    if (data.getBooleanExtra("QuestionResult", false))
+                    if (data.getBooleanExtra("QuestionResult", false)) {
                         trueAnswer++;
+                    }
                     if (gameLevel <= 3)
                         createQuestionLevel(gameLevel - 1);
                     else
@@ -151,29 +151,26 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 } else {
                     long currentScore = (long) (data.getDoubleExtra(
                             "gestureScore", 0) * 10);
+                    totalGestureScore += currentScore;
+
                     if (data.getBooleanExtra("gestureResult", false)) {
                         if (gameLevel < 6) {
-                            Toast.makeText(this,
-                                    "Hasil : Benar, Score:" + currentScore,
-                                    Toast.LENGTH_SHORT).show();
                             gameLevel++;
                             createGestureLevel(gameLevel);
                         } else {
-                            Toast.makeText(
-                                    this,
-                                    "Hasil : Benar, Total Score:"
-                                            + (totalGestureScore + (trueAnswer * 25)),
-                                    Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LevelSelector.this, LevelResult.class);
+                            intent.putExtra("Win", trueAnswer == 3);
+                            intent.putExtra("Score", trueAnswer * 25 + totalGestureScore);
+                            startActivityForResult(intent, FINAL_RESULT_REQUEST);
+                            if (trueAnswer == 3) {
+                                SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25 + totalGestureScore);
+                            }
+
                             gameState = STATE_LEVEL_SELECT;
                             gameLevel = 0;
                         }
                     } else {
-                        Toast.makeText(
-                                this,
-                                "Hasil : Salah, Score:"
-                                        + (long) (data.getDoubleExtra(
-                                        "gestureScore", 0) * 10),
-                                Toast.LENGTH_SHORT).show();
+                        this.showResultScreen(false, trueAnswer * 25 + totalGestureScore);
                         gameState = STATE_LEVEL_SELECT;
                         gameLevel = 0;
                     }
@@ -185,6 +182,13 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 gameLevel = 0;
             }
         }
+    }
+
+    private void showResultScreen(boolean win, long score) {
+        Intent intent = new Intent(LevelSelector.this, LevelResult.class);
+        intent.putExtra("Win", win);
+        intent.putExtra("Score", score);
+        startActivity(intent);
     }
 
     protected void createGestureLevel(int gestureNum) {
@@ -300,16 +304,4 @@ public class LevelSelector extends BaseStrokeClinicActivity {
             arrPostOff[i].setVisible(i > currentLevel - 1);
         }
     }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
 }

@@ -1,37 +1,71 @@
 package org.ristek.strokeapp;
 
-import org.andengine.engine.options.EngineOptions;
+import android.graphics.Typeface;
+import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
-import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.entity.scene.background.SpriteBackground;
+import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
+import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.TextureOptions;
+import org.andengine.util.color.Color;
 
-public class LevelResult extends BaseGameActivity {
+public class LevelResult extends BaseStrokeClinicActivity {
 
-	@Override
-	public EngineOptions onCreateEngineOptions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private Font mFont;
+    private Scene resultScene;
+    private Text scoreText;
+    private Text totalScoreText;
 
-	@Override
-	public void onCreateResources(
-			OnCreateResourcesCallback pOnCreateResourcesCallback)
-			throws Exception {
-		// TODO Auto-generated method stub
+    @Override
+    protected void onCreateResources() {
+        this.createTextureAtlas(2048, 1024);
+        this.loadTexture("map", "win", "lose");
+        this.buildTextureAtlas();
 
-	}
+        this.mFont = FontFactory.create(this.getFontManager(),
+                this.getTextureManager(), 256, 256,
+                TextureOptions.BILINEAR_PREMULTIPLYALPHA,
+                Typeface.create(Typeface.DEFAULT, Typeface.NORMAL), 32, true,
+                Color.BLACK_ABGR_PACKED_INT);
+        this.mFont.load();
+    }
 
-	@Override
-	public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback)
-			throws Exception {
-		// TODO Auto-generated method stub
+    @Override
+    protected Scene onCreateScene() {
+        resultScene = new Scene();
+        resultScene.setBackground(new SpriteBackground(new Sprite(0, 0,
+                getTR("map"), getVertexBufferObjectManager())));
 
-	}
 
-	@Override
-	public void onPopulateScene(Scene pScene,
-			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception {
-		// TODO Auto-generated method stub
+        boolean isWin = this.getIntent().getBooleanExtra("Win", false);
+        if (isWin) {
+            resultScene.attachChild(new Sprite(0, 0, getTR("win"), getVertexBufferObjectManager()));
+        } else {
+            resultScene.attachChild(new Sprite(0, 0, getTR("lose"), getVertexBufferObjectManager()));
+        }
 
-	}
+        Text resultText = new Text(300, 100, mFont, Boolean.toString(isWin), getVertexBufferObjectManager());
+        resultScene.attachChild(resultText);
 
+        scoreText = new Text(300, 200, mFont, "Nilai: " + this.getIntent().getLongExtra("Score", 0),
+                getVertexBufferObjectManager());
+        resultScene.attachChild(scoreText);
+
+        totalScoreText = new Text(300, 300, mFont, "Total Nilai: " + SaveManager.getTotalScore(),
+                getVertexBufferObjectManager());
+        resultScene.attachChild(totalScoreText);
+
+        resultScene.setOnSceneTouchListener(new IOnSceneTouchListener() {
+            @Override
+            public boolean onSceneTouchEvent(Scene scene, TouchEvent touchEvent) {
+                if (touchEvent.isActionUp()) finish();
+                return true;
+            }
+        });
+
+        return resultScene;
+    }
 }
