@@ -25,129 +25,79 @@
         "answer-index" : 3
     },
     {
-        "question" : "Pertanyaan dummy No.6 Jawaban: A",
-        "options" : [ "A", "B", "C", "D", "E" ],
+        "question" : "Berapakah 33% dari 163",
+        "options" : [ "53,79", "54,33", "543", "5,37", "5379" ],
         "answer-index" : 0
     },
     {
-        "question" : "Pertanyaan dummy No.7 Jawaban: B",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 1
-    },
-    {
-        "question" : "Pertanyaan dummy No.8 Jawaban: C",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 2
-    },
-    {
-        "question" : "Pertanyaan dummy No.9 Jawaban: D",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 3
-    },
-    {
-        "question" : "Pertanyaan dummy No.10 Jawaban: E",
-        "options" : [ "A", "B", "C", "D", "E" ],
+        "question" : "3 = berapa persennya 20",
+        "options" : [ "0,66", "6,66", "0,15", "0,60", "15" ],
         "answer-index" : 4
     },
     {
-        "question" : "Pertanyaan dummy No.11 Jawaban: A",
-        "options" : [ "A", "B", "C", "D", "E" ],
+        "question" : "4,036 : 0,04 =",
+        "options" : [ "1,009", "10,9", "10,09", "100,9", "109" ],
+        "answer-index" : 3
+    },
+    {
+        "question" : "(0,25)^2",
+        "options" : [ "0,0025", "0,625", "0,0625", "6,25", "0,00625" ],
+        "answer-index" : 2
+    },
+    {
+        "question" : "304,09 : 64,7 =",
+        "options" : [ "0,407", "4,07", "4,70", "0,47", "37" ],
+        "answer-index" : 2
+    },
+    {
+        "question" : "1/16 = berapa persen",
+        "options" : [ "16,25", "6,25", "1,65", "0,625", "0,0165" ],
+        "answer-index" : 1
+    },
+    {
+        "question" : "6,5 = berapa % dari 6",
+        "options" : [ "108,33", "92,30", "83,33", "8,33", "38,33" ],
         "answer-index" : 0
     },
     {
-        "question" : "Pertanyaan dummy No.12 Jawaban: B",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 1
-    },
-    {
-        "question" : "Pertanyaan dummy No.13 Jawaban: C",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 2
-    },
-    {
-        "question" : "Pertanyaan dummy No.14 Jawaban: D",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 3
-    },
-    {
-        "question" : "Pertanyaan dummy No.15 Jawaban: E",
-        "options" : [ "A", "B", "C", "D", "E" ],
+        "question" : "berapakah 6/7 dari 87,5%",
+        "options" : [ "125", "75", "7,5", "6,5", "0,75" ],
         "answer-index" : 4
     },
     {
-        "question" : "Pertanyaan dummy No.16 Jawaban: A",
-        "options" : [ "A", "B", "C", "D", "E" ],
+        "question" : "15 = 37,5 % dari",
+        "options" : [ "35", "40", "45", "37,5", "42,5" ],
+        "answer-index" : 1
+    },
+    {
+        "question" : "Suatu seri: 100-4-90-7-80-",
+        "options" : [ "8", "9", "10", "11", "12" ],
+        "answer-index" : 2
+    },
+    {
+        "question" : "5-7-10-12-15 seri selanjutnya",
+        "options" : [ "13", "14", "15", "16", "17" ],
+        "answer-index" : 4
+    },
+    {
+        "question" : "Suatu seri 2-4-2-4-6-4-6-8-6-8-10-8- seri selanjutnya",
+        "options" : [ "6", "7", "8", "9", "10" ],
+        "answer-index" : 4
+    },
+    {
+        "question" : "Suatu seri: 2-5-7-3-6-8-4-..-.. seri selanjutnya",
+        "options" : [ "5-6", "6-7", "7-8", "6-8", "7-9" ],
+        "answer-index" : 4
+    },
+    {
+        "question" : "Suatu seri: 14-10-6-13-9-5-12- seri selanjutnya",
+        "options" : [ "5", "6", "8", "9", "12" ],
+        "answer-index" : 2
+    },
+    {
+        "question" : "Suatu seri: 1-2-3-2-4-6-4-8- seri selanjutnya",
+        "options" : [ "12", "10", "8", "6", "4" ],
         "answer-index" : 0
-    },
-    {
-        "question" : "Pertanyaan dummy No.17 Jawaban: B",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 1
-    },
-    {
-        "question" : "Pertanyaan dummy No.18 Jawaban: C",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 2
-    },
-    {
-        "question" : "Pertanyaan dummy No.19 Jawaban: D",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 3
-    },
-    {
-        "question" : "Pertanyaan dummy No.20 Jawaban: E",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 4
-    },
-    {
-        "question" : "Pertanyaan dummy No.21 Jawaban: A",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 0
-    },
-    {
-        "question" : "Pertanyaan dummy No.22 Jawaban: B",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 1
-    },
-    {
-        "question" : "Pertanyaan dummy No.23 Jawaban: C",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 2
-    },
-    {
-        "question" : "Pertanyaan dummy No.24 Jawaban: D",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 3
-    },
-    {
-        "question" : "Pertanyaan dummy No.25 Jawaban: E",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 4
-    },
-    {
-        "question" : "Pertanyaan dummy No.26 Jawaban: A",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 0
-    },
-    {
-        "question" : "Pertanyaan dummy No.27 Jawaban: B",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 1
-    },
-    {
-        "question" : "Pertanyaan dummy No.28 Jawaban: C",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 2
-    },
-    {
-        "question" : "Pertanyaan dummy No.29 Jawaban: D",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 3
-    },
-    {
-        "question" : "Pertanyaan dummy No.30 Jawaban: E",
-        "options" : [ "A", "B", "C", "D", "E" ],
-        "answer-index" : 4
     }
 ]
 

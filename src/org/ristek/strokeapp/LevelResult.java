@@ -47,7 +47,7 @@ public class LevelResult extends BaseStrokeClinicActivity {
             resultScene.attachChild(new Sprite(0, 0, getTR("lose"), getVertexBufferObjectManager()));
         }
 
-        Text resultText = new Text(300, 100, mFont, Boolean.toString(isWin), getVertexBufferObjectManager());
+        Text resultText = new Text(300, 100, mFont, (isWin) ? "Berhasil" : "Gagal", getVertexBufferObjectManager());
         resultScene.attachChild(resultText);
 
         scoreText = new Text(300, 200, mFont, "Nilai: " + this.getIntent().getLongExtra("Score", 0),

@@ -97,10 +97,10 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 } else {
                     if (data.getBooleanExtra("QuestionResult", false))
                         trueAnswer++;
-                    this.showResultScreen(trueAnswer >= 4, trueAnswer * 25);
+                    this.showResultScreen(trueAnswer >= 3, trueAnswer * 25);
                     gameState = STATE_LEVEL_SELECT;
                     gameLevel = 0;
-                    if (trueAnswer >= 4) {
+                    if (trueAnswer >= 3) {
                         updateLevel(currentLevel + 1);
                         SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25);
                     }
