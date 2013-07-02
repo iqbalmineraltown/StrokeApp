@@ -115,6 +115,12 @@ public class Questions extends Activity {
             questionButton[i].setText(questionList[questionId].answer[i]);
         }
 
+        TextView timeText = (TextView) findViewById(R.id.questionTimeText);
+        if(SaveManager.getMode() == GameMode.NORMAL) timeText.setVisibility(View.INVISIBLE);
+        else{
+            //TODO
+        }
+
         addListenerOnButton();
     }
 

@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -38,12 +39,6 @@ public class GestureActivity extends Activity {
 		
 		setContentView(R.layout.activity_gesture);
 		ImageView image = (ImageView) findViewById(R.id.imageView1);
-//		LinearLayout layout = (LinearLayout) findViewById(R.id.LinearLayout1);
-//		try {
-//			layout.setBackgroundDrawable(Drawable.createFromPath(getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0).applicationInfo.dataDir+"/assets/images/trace.png"));
-//		} catch (NameNotFoundException e) {
-//			e.printStackTrace();
-//		}
 		Bitmap gestureImage = gestureLib.getGestures(gestureName).get(0)
 				.toBitmap(400, 240, 20, 100, Color.RED);
 		image.setImageBitmap(gestureImage);
@@ -79,6 +74,12 @@ public class GestureActivity extends Activity {
 				
 			}
 		});
+
+        TextView timeText = (TextView) findViewById(R.id.timeTextGesture);
+        if(SaveManager.getMode() == GameMode.NORMAL) timeText.setVisibility(View.INVISIBLE);
+        else{
+            //TODO
+        }
 		
 		Button clearButton = (Button) findViewById(R.id.buttonClear);
 		clearButton.setOnClickListener(new View.OnClickListener() {

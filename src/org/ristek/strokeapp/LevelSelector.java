@@ -3,6 +3,8 @@ package org.ristek.strokeapp;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.widget.Toast;
+import org.andengine.entity.scene.IOnAreaTouchListener;
+import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -62,6 +64,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
     private int trueAnswer;
     private int currentLevel;
     private long totalGestureScore;
+    int selection = -1;
 
     @Override
     protected void onCreateResources() {
@@ -74,10 +77,126 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         this.createTextureAtlas(2048, 1024);
         this.loadTexture(textureName);
         this.buildTextureAtlas();
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(SaveManager.getMode() == GameMode.NORMAL){
+            onActivityResultNormal(requestCode,resultCode,data);
+        } else {
+            onActivityResultTimed(requestCode,resultCode,data);
+        }
+    }
+
+    protected void onActivityResultNormal(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FINAL_RESULT_REQUEST) {
+            SaveManager.addTotalScoreToHighScore();
+            SaveManager.reset();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return;
+        }
+        if (gameState == STATE_QUESTION_LEVEL) {
+            if (requestCode == QUESTION_ACTIVITY_REQUEST
+                    && resultCode == RESULT_OK) {
+                if (gameLevel < 5) {
+                    gameLevel++;
+                    if (data.getBooleanExtra("QuestionResult", false))
+                        trueAnswer++;
+                    createQuestionLevel(gameLevel - 1);
+                } else {
+                    if (data.getBooleanExtra("QuestionResult", false))
+                        trueAnswer++;
+                    this.showResultScreen(trueAnswer >= 3, trueAnswer * 25);
+                    gameState = STATE_LEVEL_SELECT;
+                    gameLevel = 0;
+                    if (trueAnswer >= 3) {
+                        updateLevel(currentLevel + 1);
+                        SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25);
+                    }
+                }
+            } else {
+                this.showResultScreen(false, trueAnswer * 25);
+                gameState = STATE_LEVEL_SELECT;
+                gameLevel = 0;
+            }
+        }
+        if (gameState == STATE_GESTURE_LEVEL) {
+            if (requestCode == GESTURE_ACTIVITY_REQUEST
+                    && resultCode == RESULT_OK
+                    && data.getBooleanExtra("gestureResult", false)) {
+                long currentScore = (long) (data.getDoubleExtra("gestureScore",
+                        0) * 10);
+                totalGestureScore += currentScore;
+
+                if (gameLevel < 3) {
+                    Toast.makeText(this,
+                            "Hasil : Benar, Score:" + currentScore,
+                            Toast.LENGTH_SHORT).show();
+                    gameLevel++;
+                    createGestureLevel(gameLevel);
+                } else {
+                    this.showResultScreen(true, totalGestureScore);
+                    SaveManager.setTotalScore(SaveManager.getTotalScore() + totalGestureScore);
+                    gameState = STATE_LEVEL_SELECT;
+                    gameLevel = 0;
+                    updateLevel(currentLevel + 1);
+                }
+            } else {
+                this.showResultScreen(false, totalGestureScore);
+                gameState = STATE_LEVEL_SELECT;
+                gameLevel = 0;
+            }
+        } else if (gameState == STATE_FINAL_LEVEL) {
+            if (resultCode == RESULT_OK) {
+                if (gameLevel <= 3) {
+                    gameLevel++;
+                    if (data.getBooleanExtra("QuestionResult", false)) {
+                        trueAnswer++;
+                    }
+                    if (gameLevel <= 3)
+                        createQuestionLevel(gameLevel - 1);
+                    else
+                        createGestureLevel(gameLevel);
+                } else {
+                    long currentScore = (long) (data.getDoubleExtra(
+                            "gestureScore", 0) * 10);
+                    totalGestureScore += currentScore;
+
+                    if (data.getBooleanExtra("gestureResult", false)) {
+                        if (gameLevel < 6) {
+                            gameLevel++;
+                            createGestureLevel(gameLevel);
+                        } else {
+                            Intent intent = new Intent(LevelSelector.this, LevelResult.class);
+                            intent.putExtra("Win", trueAnswer == 3);
+                            intent.putExtra("Score", trueAnswer * 25 + totalGestureScore);
+                            startActivityForResult(intent, FINAL_RESULT_REQUEST);
+                            if (trueAnswer == 3) {
+                                SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25 + totalGestureScore);
+                            }
+
+                            gameState = STATE_LEVEL_SELECT;
+                            gameLevel = 0;
+                        }
+                    } else {
+                        this.showResultScreen(false, trueAnswer * 25 + totalGestureScore);
+                        gameState = STATE_LEVEL_SELECT;
+                        gameLevel = 0;
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
+                        .show();
+                gameState = STATE_LEVEL_SELECT;
+                gameLevel = 0;
+            }
+        }
+    }
+
+    protected void onActivityResultTimed(int requestCode, int resultCode, Intent data) {
         if (requestCode == FINAL_RESULT_REQUEST) {
             SaveManager.addTotalScoreToHighScore();
             SaveManager.reset();
@@ -211,59 +330,19 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         this.mEngine.registerUpdateHandler(new FPSLogger());
 
         mMainScene = new Scene() {
-            int selection = -1;
-
             @Override
             public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
-                float pX = pSceneTouchEvent.getX();
-                float pY = pSceneTouchEvent.getY();
-                if (pSceneTouchEvent.isActionDown()) {
-                    for (int i = 0; i < arrPost.length; i++) {
-                        if (arrPost[i].isVisible()
-                                && arrPost[i].contains(pX, pY)) {
-                            selection = i;
-                        }
-                    }
-                } else if (pSceneTouchEvent.isActionUp()) {
-                    for (int i = 0; i < arrPost.length; i++) {
-                        if (selection == i) {
-                            selection = -1;
-                            if (i < 5) {
-                                // Jika bagian pertanyaan
-                                gameState = STATE_QUESTION_LEVEL;
-                                gameLevel = 1;
-                                trueAnswer = 0;
-                                createQuestionLevel(gameLevel - 1);
-                            } else if (i < 8) {
-                                // Jika bagian gesture
-                                Collections.shuffle(Arrays.asList(gestureName));
-                                gameState = STATE_GESTURE_LEVEL;
-                                gameLevel = 1;
-                                totalGestureScore = 0;
-                                createGestureLevel(gameLevel);
-                            } else {
-                                Collections.shuffle(Arrays.asList(gestureName));
-                                gameState = STATE_FINAL_LEVEL;
-                                gameLevel = 1;
-                                totalGestureScore = 0;
-                                trueAnswer = 0;
-                                createQuestionLevel(gameLevel - 1);
-                            }
-
-                        }
-                    }
-                }
-                updateLevel(currentLevel);
-                if (selection >= 0) {
-                    arrPost[selection].setVisible(false);
-                    arrPostWin[selection].setVisible(true);
-                }
+                LevelSelector.this.onSceneTouchEvent(pSceneTouchEvent);
                 return super.onSceneTouchEvent(pSceneTouchEvent);
             }
         };
+
+        // set background
         mMainScene.setBackground(new SpriteBackground(new Sprite(0, 0,
                 getTR("map"), getVertexBufferObjectManager())));
 
+
+        // set route
         route = new Sprite[POST_SUM - 1];
         for (int i = 0; i < route.length; i++) {
             route[i] = new Sprite(ROUTE_X[i], ROUTE_Y[i],
@@ -271,6 +350,60 @@ public class LevelSelector extends BaseStrokeClinicActivity {
             mMainScene.attachChild(route[i]);
         }
 
+        createLevelPost();
+
+        updateLevel(currentLevel);
+
+        return mMainScene;
+    }
+
+    public void onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
+        float pX = pSceneTouchEvent.getX();
+        float pY = pSceneTouchEvent.getY();
+        if (pSceneTouchEvent.isActionDown()) {
+            for (int i = 0; i < arrPost.length; i++) {
+                if (arrPost[i].isVisible()
+                        && arrPost[i].contains(pX, pY)) {
+                    selection = i;
+                }
+            }
+        } else if (pSceneTouchEvent.isActionUp()) {
+            for (int i = 0; i < arrPost.length; i++) {
+                if (selection == i) {
+                    selection = -1;
+                    if (i < 5) {
+                        // Jika bagian pertanyaan
+                        gameState = STATE_QUESTION_LEVEL;
+                        gameLevel = 1;
+                        trueAnswer = 0;
+                        createQuestionLevel(gameLevel - 1);
+                    } else if (i < 8) {
+                        // Jika bagian gesture
+                        Collections.shuffle(Arrays.asList(gestureName));
+                        gameState = STATE_GESTURE_LEVEL;
+                        gameLevel = 1;
+                        totalGestureScore = 0;
+                        createGestureLevel(gameLevel);
+                    } else {
+                        Collections.shuffle(Arrays.asList(gestureName));
+                        gameState = STATE_FINAL_LEVEL;
+                        gameLevel = 1;
+                        totalGestureScore = 0;
+                        trueAnswer = 0;
+                        createQuestionLevel(gameLevel - 1);
+                    }
+
+                }
+            }
+        }
+        updateLevel(currentLevel);
+        if (selection >= 0) {
+            arrPost[selection].setVisible(false);
+            arrPostWin[selection].setVisible(true);
+        }
+    }
+
+    public void createLevelPost(){
         arrPost = new Sprite[POST_SUM];
         for (int i = 0; i < arrPost.length; i++) {
             arrPost[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i], getTR("i-pos"),
@@ -291,8 +424,6 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                     getTR("i-pos-off"), getVertexBufferObjectManager());
             mMainScene.attachChild(arrPostOff[i]);
         }
-        updateLevel(currentLevel);
-        return mMainScene;
     }
 
     public void updateLevel(int curr) {
