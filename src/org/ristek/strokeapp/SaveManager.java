@@ -80,15 +80,16 @@ public class SaveManager {
         }
     }
 
-    public static int getMode(){
+    public static int getMode() {
         return preference.getInt("currentMode", GameMode.NORMAL);
     }
 
     public static void setMode(int value) {
         Editor edit = preference.edit();
-        edit.putLong("currentMode", value);
+        edit.putInt("currentMode", value);
         edit.commit();
     }
+
     public static void reset() {
         setCurrentLevel(1);
         setTotalScore(0);

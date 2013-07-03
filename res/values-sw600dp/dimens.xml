@@ -8,7 +8,7 @@
     <dimen name="gesture_top_margin">65dp</dimen>
     <dimen name="gesture_right_margin">80dp</dimen>
     <dimen name="gesture_bottom_margin">160dp</dimen>
-    <dimen name="question_top_padding">120dp</dimen>
+    <dimen name="question_top_padding">150dp</dimen>
     <dimen name="question_left_padding">100dp</dimen>
     <dimen name="question_text_width">600dp</dimen>
     <dimen name="question_text_height">100dp</dimen>

@@ -3,8 +3,6 @@ package org.ristek.strokeapp;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.widget.Toast;
-import org.andengine.entity.scene.IOnAreaTouchListener;
-import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -38,9 +36,9 @@ public class LevelSelector extends BaseStrokeClinicActivity {
     private static final int[] ROUTE_Y = {204, 104, 109, 228, 320, 277, 271,
             155};
 
-    private static final int QUESTION_ACTIVITY_REQUEST = 1;
-    private static final int GESTURE_ACTIVITY_REQUEST = 2;
-    private static final int FINAL_RESULT_REQUEST = 3;
+    public static final int QUESTION_ACTIVITY_REQUEST = 1;
+    public static final int GESTURE_ACTIVITY_REQUEST = 2;
+    public static final int FINAL_RESULT_REQUEST = 3;
 
     private static final int POST_SUM = 9;
 
@@ -82,10 +80,10 @@ public class LevelSelector extends BaseStrokeClinicActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(SaveManager.getMode() == GameMode.NORMAL){
-            onActivityResultNormal(requestCode,resultCode,data);
+        if (SaveManager.getMode() == GameMode.NORMAL) {
+            onActivityResultNormal(requestCode, resultCode, data);
         } else {
-            onActivityResultTimed(requestCode,resultCode,data);
+            onActivityResultTimed(requestCode, resultCode, data);
         }
     }
 
@@ -132,9 +130,6 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 totalGestureScore += currentScore;
 
                 if (gameLevel < 3) {
-                    Toast.makeText(this,
-                            "Hasil : Benar, Score:" + currentScore,
-                            Toast.LENGTH_SHORT).show();
                     gameLevel++;
                     createGestureLevel(gameLevel);
                 } else {
@@ -403,7 +398,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         }
     }
 
-    public void createLevelPost(){
+    public void createLevelPost() {
         arrPost = new Sprite[POST_SUM];
         for (int i = 0; i < arrPost.length; i++) {
             arrPost[i] = new Sprite(LEVEL_X[i], LEVEL_Y[i], getTR("i-pos"),
@@ -434,5 +429,11 @@ public class LevelSelector extends BaseStrokeClinicActivity {
             arrPostWin[i].setVisible(i < currentLevel - 1);
             arrPostOff[i].setVisible(i > currentLevel - 1);
         }
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        intent.putExtra("requestCode", requestCode);
+        super.startActivityForResult(intent, requestCode);
     }
 }

@@ -1,5 +1,6 @@
 package org.ristek.strokeapp;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Typeface;
 import org.andengine.entity.scene.Scene;
@@ -18,7 +19,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
 
-public class MainActivity extends BaseStrokeClinicActivity {
+public class MainActivity extends BaseStrokeClinicActivity implements ResetDialogFragment.ResetDialogListener {
 
     // ===========================================================
     // Constants
@@ -30,6 +31,11 @@ public class MainActivity extends BaseStrokeClinicActivity {
     protected static final int MENU_STROKE_STORY = 3;
     protected static final int MENU_HIGH_SCORE = 4;
     protected static final int MENU_SUM = 5;
+
+    protected static final int RESET_OPTIONS = 0;
+    protected static final int RESET_NORMAL = 1;
+    protected static final int RESET_TIME = 2;
+
     protected static final String[] tiledTextureName = {"b-start", "b-time",
             "b-opsi", "b-cerita", "b-hiscore"};
     protected static final String[] textureName = {"l-bg", "opsi"};
@@ -42,6 +48,7 @@ public class MainActivity extends BaseStrokeClinicActivity {
 
     private Font mFont;
 
+    private int resetStatus;
     // private Music bgMusic;
 
     // ===========================================================
@@ -93,9 +100,22 @@ public class MainActivity extends BaseStrokeClinicActivity {
                 MODE_PRIVATE));
 
         mMenuScene = new MainMenuScene();
-        // if (SaveManager.getOption("Sound"))
-        // bgMusic.play();
         return mMenuScene;
+    }
+
+    @Override
+    public void onResetDone() {
+        if (resetStatus == RESET_OPTIONS)
+            ((MainMenuScene) mMenuScene).resetGame();
+        else {
+            SaveManager.reset();
+            SaveManager.setMode(resetStatus - 1);
+            SaveManager.setOption("Story", false);
+            Intent intent = new Intent(MainActivity.this,
+                    OpeningActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(intent);
+        }
     }
 
     // ===========================================================
@@ -138,10 +158,10 @@ public class MainActivity extends BaseStrokeClinicActivity {
             if (hasChildScene()) {
                 optionScene.onSceneTouchEvent(pSceneTouchEvent);
             } else if (pSceneTouchEvent.isActionDown()) {
-                for (int i = 0; i < menuButtons.length; i++) {
-                    if (menuButtons[i].contains(pSceneTouchEvent.getX(),
+                for (TiledSprite menuButton : menuButtons) {
+                    if (menuButton.contains(pSceneTouchEvent.getX(),
                             pSceneTouchEvent.getY())) {
-                        menuButtons[i].setCurrentTileIndex(1);
+                        menuButton.setCurrentTileIndex(1);
                     }
                 }
             } else if (pSceneTouchEvent.isActionUp()) {
@@ -152,18 +172,38 @@ public class MainActivity extends BaseStrokeClinicActivity {
 
                         if (i == MENU_START) {
                             if (SaveManager.getOption("Story")) {
+                                SaveManager.setMode(GameMode.NORMAL);
                                 SaveManager.setOption("Story", false);
                                 Intent intent = new Intent(MainActivity.this,
                                         OpeningActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                                 startActivity(intent);
+                            } else if (SaveManager.getMode() == GameMode.TIME_TRIAL) {
+                                resetStatus = RESET_NORMAL;
+                                DialogFragment dialog = new ResetDialogFragment();
+                                dialog.show(getFragmentManager(), "reset");
                             } else {
                                 Intent intent = new Intent(MainActivity.this,
                                         LevelSelector.class);
                                 startActivity(intent);
                             }
                         } else if (i == MENU_TIME_TRIAL) {
-                            // TODO Time Trial
+                            if (SaveManager.getOption("Story")) {
+                                SaveManager.setMode(GameMode.TIME_TRIAL);
+                                SaveManager.setOption("Story", false);
+                                Intent intent = new Intent(MainActivity.this,
+                                        OpeningActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                startActivity(intent);
+                            } else if (SaveManager.getMode() == GameMode.NORMAL) {
+                                resetStatus = RESET_TIME;
+                                DialogFragment dialog = new ResetDialogFragment();
+                                dialog.show(getFragmentManager(), "reset");
+                            } else {
+                                Intent intent = new Intent(MainActivity.this,
+                                        LevelSelector.class);
+                                startActivity(intent);
+                            }
                         } else if (i == MENU_HIGH_SCORE) {
                             Intent intent = new Intent(MainActivity.this,
                                     HighScoreScreen.class);
@@ -181,6 +221,12 @@ public class MainActivity extends BaseStrokeClinicActivity {
             }
 
             return true;
+        }
+
+        public void resetGame() {
+            if (hasChildScene()) {
+                ((OptionsScene) getChildScene()).resetComplete();
+            }
         }
 
     }
@@ -239,11 +285,15 @@ public class MainActivity extends BaseStrokeClinicActivity {
                     this.back();
                 }
                 if (resetText.contains(pX, pY)) {
-                    SaveManager.reset();
-                    resetText.setText("Reset selesai");
+                    DialogFragment dialog = new ResetDialogFragment();
+                    dialog.show(getFragmentManager(), "reset");
                 }
             }
             return true;
+        }
+
+        public void resetComplete() {
+            resetText.setText("Reset Selesai");
         }
     }
 

@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/textViewQuestion"
         android:layout_width="@dimen/question_text_width"
-        android:layout_height="@dimen/question_text_height"
+        android:layout_height="70dp"
         android:text="@string/soal1"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_gravity="center"
@@ -39,20 +39,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/_14"
                     android:textSize="@dimen/question_text_size"
-                    android:padding="5dp"/>
-
-                <RadioButton
-                    android:id="@+id/radio3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/_16"
-                    android:textSize="@dimen/question_text_size"
-                    android:padding="5dp"/>
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                    />
 
                 <RadioButton
                     android:id="@+id/radio1"
@@ -60,20 +47,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/_13"
                     android:textSize="@dimen/question_text_size"
-                    android:padding="5dp"/>
-
-                <RadioButton
-                    android:id="@+id/radio4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/_17"
-                    android:textSize="@dimen/question_text_size"
-                    android:padding="5dp"/>
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                    />
 
                 <RadioButton
                     android:id="@+id/radio2"
@@ -81,8 +55,31 @@
                     android:layout_height="wrap_content"
                     android:text="@string/_15"
                     android:textSize="@dimen/question_text_size"
-                    android:padding="5dp"/>
+                    />
+
             </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <RadioButton
+                    android:id="@+id/radio3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_16"
+                    android:textSize="@dimen/question_text_size"
+                    />
+
+                <RadioButton
+                    android:id="@+id/radio4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/_17"
+                    android:textSize="@dimen/question_text_size"
+                    />
+            </TableRow>
+
         </TableLayout>
     </RadioGroup>
 
@@ -90,7 +87,8 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:gravity="center_vertical|center_horizontal">
+        android:gravity="center_vertical|center_horizontal"
+        >
 
         <TextView
             android:layout_width="wrap_content"
@@ -106,8 +104,8 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_submit"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:text="@string/_submit"/>
 
     </LinearLayout>
 </LinearLayout>
