@@ -10,6 +10,9 @@ import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
+import org.ristek.strokeapp.support.BaseStrokeClinicActivity;
+import org.ristek.strokeapp.support.GameMode;
+import org.ristek.strokeapp.support.SaveManager;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -306,13 +309,13 @@ public class LevelSelector extends BaseStrokeClinicActivity {
     }
 
     protected void createGestureLevel(int gestureNum) {
-        Intent intent = new Intent(LevelSelector.this, GestureActivity.class);
+        Intent intent = new Intent(LevelSelector.this, LevelGesture.class);
         intent.putExtra("gestureName", gestureName[gestureNum]);
         startActivityForResult(intent, GESTURE_ACTIVITY_REQUEST);
     }
 
     protected void createQuestionLevel(int questionIdx) {
-        Intent intent = new Intent(LevelSelector.this, Questions.class);
+        Intent intent = new Intent(LevelSelector.this, LevelQuestion.class);
         intent.putExtra("QuestionIndex", questionIdx);
         startActivityForResult(intent, QUESTION_ACTIVITY_REQUEST);
     }

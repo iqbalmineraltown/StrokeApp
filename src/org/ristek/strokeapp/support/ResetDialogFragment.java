@@ -1,4 +1,4 @@
-package org.ristek.strokeapp;
+package org.ristek.strokeapp.support;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import org.ristek.strokeapp.R;
 
 public class ResetDialogFragment extends DialogFragment {
 

@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="org.ristek.strokeapp.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -23,32 +23,32 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.ristek.strokeapp.LevelSelector"
+            android:name=".LevelSelector"
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name="org.ristek.strokeapp.LevelResult"
+            android:name=".LevelResult"
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name="org.ristek.strokeapp.Questions"
+            android:name=".LevelQuestion"
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name="org.ristek.strokeapp.HighScoreScreen"
+            android:name=".HighScoreScreen"
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name="org.ristek.strokeapp.OpeningActivity"
+            android:name=".OpeningActivity"
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name="org.ristek.strokeapp.StrokeFact"
+            android:name=".StrokeFact"
             android:label="Kisah Inspiratif"
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name="org.ristek.strokeapp.GestureActivity"
+            android:name=".LevelGesture"
             android:label="@string/title_activity_gesture"
             android:screenOrientation="landscape">
         </activity>

@@ -1,4 +1,4 @@
-package org.ristek.strokeapp;
+package org.ristek.strokeapp.support;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

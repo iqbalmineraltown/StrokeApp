@@ -1,4 +1,4 @@
-package org.ristek.strokeapp;
+package org.ristek.strokeapp.support;
 
 public class GameMode {
     public static final int NORMAL = 0;

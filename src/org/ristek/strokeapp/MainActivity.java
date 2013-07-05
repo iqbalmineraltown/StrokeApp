@@ -18,6 +18,10 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
+import org.ristek.strokeapp.support.BaseStrokeClinicActivity;
+import org.ristek.strokeapp.support.GameMode;
+import org.ristek.strokeapp.support.ResetDialogFragment;
+import org.ristek.strokeapp.support.SaveManager;
 
 public class MainActivity extends BaseStrokeClinicActivity implements ResetDialogFragment.ResetDialogListener {
 

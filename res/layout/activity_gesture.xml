@@ -37,13 +37,15 @@
             android:id="@+id/buttonClear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/delete"/>
+            android:text="@string/delete"
+            />
 
         <Button
             android:id="@+id/buttonSubmit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/finish"/>
+            android:text="@string/finish"
+            />
 
     </LinearLayout>
 

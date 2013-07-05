@@ -1,4 +1,4 @@
-package org.ristek.strokeapp;
+package org.ristek.strokeapp.support;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
@@ -57,21 +57,21 @@ public abstract class BaseStrokeClinicActivity extends SimpleBaseGameActivity {
         this.mTextureRegion = new HashMap<String, ITextureRegion>();
     }
 
-    public void loadTexture(String... textureName) {
-        for (int i = 0; i < textureName.length; i++) {
+    public void loadTexture(String... textureNames) {
+        for (String textureName : textureNames) {
             TextureRegion temp = BitmapTextureAtlasTextureRegionFactory
                     .createFromAsset(this.mBitmapTextureAtlas, this, "images/"
-                            + textureName[i] + ".png");
-            mTextureRegion.put(textureName[i], temp);
+                            + textureName + ".png");
+            mTextureRegion.put(textureName, temp);
         }
     }
 
-    public void loadTiledTexture(int row, int column, String... textureName) {
-        for (int i = 0; i < textureName.length; i++) {
+    public void loadTiledTexture(int row, int column, String... textureNames) {
+        for (String textureName : textureNames) {
             TiledTextureRegion temp = BitmapTextureAtlasTextureRegionFactory
                     .createTiledFromAsset(this.mBitmapTextureAtlas, this,
-                            "images/" + textureName[i] + ".png", column, row);
-            mTextureRegion.put(textureName[i], temp);
+                            "images/" + textureName + ".png", column, row);
+            mTextureRegion.put(textureName, temp);
         }
     }
 

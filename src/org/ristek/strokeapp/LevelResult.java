@@ -11,6 +11,8 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.util.color.Color;
+import org.ristek.strokeapp.support.BaseStrokeClinicActivity;
+import org.ristek.strokeapp.support.SaveManager;
 
 public class LevelResult extends BaseStrokeClinicActivity {
 

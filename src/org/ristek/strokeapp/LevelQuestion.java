@@ -15,6 +15,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.ristek.strokeapp.support.ClockTimer;
+import org.ristek.strokeapp.support.GameMode;
+import org.ristek.strokeapp.support.SaveManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,13 +26,17 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Questions extends Activity {
+public class LevelQuestion extends Activity implements ClockTimer.TimerListener {
+
+    private final long QUESTION_TIME = 120000;
 
     private TextView questionText;
+    TextView timeText;
     private Button submitButton;
     private RadioButton[] questionButton;
     private int questionId;
     private static Question[] questionList;
+    private ClockTimer timer;
 
     private String readInput(InputStream in) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -115,10 +122,13 @@ public class Questions extends Activity {
             questionButton[i].setText(questionList[questionId].answer[i]);
         }
 
-        TextView timeText = (TextView) findViewById(R.id.questionTimeText);
-        if(SaveManager.getMode() == GameMode.NORMAL) timeText.setVisibility(View.INVISIBLE);
-        else{
-            //TODO
+        timeText = (TextView) findViewById(R.id.questionTimeText);
+        if (SaveManager.getMode() == GameMode.NORMAL) timeText.setVisibility(View.INVISIBLE);
+        else {
+            timer = new ClockTimer(this);
+            timer.setTimeLeft(QUESTION_TIME);
+            timeText.setText(ClockTimer.timeToString(QUESTION_TIME));
+            timer.start();
         }
 
         addListenerOnButton();
@@ -149,6 +159,8 @@ public class Questions extends Activity {
                             .putExtra(
                                     "QuestionResult",
                                     (answer == questionList[questionId].trueAnswer));
+                    if (SaveManager.getMode() == GameMode.TIME_TRIAL)
+                        resultIntent.putExtra("time", QUESTION_TIME - timer.getTimeLeft());
                     setResult(RESULT_OK, resultIntent);
                     finish();
                 }
@@ -156,25 +168,56 @@ public class Questions extends Activity {
         };
 
         submitButton.setOnClickListener(clicked);
-
     }
 
-}
+    @Override
+    public void onTimerUpdate(long timeLeft) {
+        timeText.setText(ClockTimer.timeToString(timeLeft));
+        if (timeLeft == 0) {
+            timer.stop();
+            Intent resultIntent = new Intent();
+            resultIntent
+                    .putExtra(
+                            "QuestionResult", false);
+            resultIntent.putExtra("time", QUESTION_TIME);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        }
+    }
 
-class Question {
-    String question;
-    String[] answer;
-    int trueAnswer;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (SaveManager.getMode() == GameMode.TIME_TRIAL) {
+            timer.start();
+        }
+    }
 
-    Question(String question, String answer0, String answer1, String answer2,
-             String answer3, String answer4, int trueAnswer) {
-        this.question = question;
-        this.answer = new String[5];
-        this.answer[0] = answer0;
-        this.answer[1] = answer1;
-        this.answer[2] = answer2;
-        this.answer[3] = answer3;
-        this.answer[4] = answer4;
-        this.trueAnswer = trueAnswer;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (SaveManager.getMode() == GameMode.TIME_TRIAL) {
+            timer.stop();
+        }
+    }
+
+
+    class Question {
+        String question;
+        String[] answer;
+        int trueAnswer;
+
+        Question(String question, String answer0, String answer1, String answer2,
+                 String answer3, String answer4, int trueAnswer) {
+            this.question = question;
+            this.answer = new String[5];
+            this.answer[0] = answer0;
+            this.answer[1] = answer1;
+            this.answer[2] = answer2;
+            this.answer[3] = answer3;
+            this.answer[4] = answer4;
+            this.trueAnswer = trueAnswer;
+        }
     }
 }
+
