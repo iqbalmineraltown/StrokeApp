@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inherit-compiler-output="true" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/../classes/test/test"/>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<module name="StrokeApp" scope="PROVIDED"/>
+	<lib name="robotium-solo-4.2.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/test/libs/robotium-solo-4.2.jar!/"/>
+	</lib>
+</component>
