@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/end"
+    >
+
+    <ScrollView
+        android:id="@+id/scroll_ending"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="#55ffffff">
+
+            <TextView
+                android:id="@+id/content_ending"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="70dp"
+                android:layout_marginRight="70dp"
+                android:layout_marginTop="20dp"
+                android:fadingEdge="vertical"
+                android:gravity="center_horizontal"
+                android:marqueeRepeatLimit="1"
+                android:text="@string/ending_story"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+        </RelativeLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/buttonSkipEnding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Skip"
+        android:background="@drawable/button"/>
+
+</RelativeLayout>

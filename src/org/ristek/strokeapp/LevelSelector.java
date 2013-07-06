@@ -93,7 +93,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         if (requestCode == FINAL_RESULT_REQUEST) {
             SaveManager.addTotalScoreToHighScore();
             SaveManager.reset();
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, EndingActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return;
@@ -196,7 +196,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         if (requestCode == FINAL_RESULT_REQUEST) {
             SaveManager.addTotalTimeScoreToHighScore();
             SaveManager.reset();
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, EndingActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return;

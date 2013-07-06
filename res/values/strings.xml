@@ -101,6 +101,15 @@
         karena gerak-gerik masyarakat selalu diawasi oleh pos tersebut. \n\nTidak tahan dengan kondisi ini, seorang
         pemuda bernama Medika bertekad untuk mengembalikan kondisi desa seperti dulu.
     </string>
+    <string name="ending_story">\n\n\n\n\n\nSetelah semua pos dilumpuhkan, organisasi Stroke berhasil diusir dari desa
+        Neuron. Namun seorang pemuka organisasi Stroke mengancam bahwa suatu saat dia akan berusaha menguasai desa
+        Neuron lagi\n\nMedika tidak menganggap ucapan tersebut isapan jempol belaka. Oleh karena itu, dia mengumpulkan
+        pemuda-pemuda lainnya untuk menjaga desa demi mengantisipasi ancaman Organisasi Stroke.\n\n Selain itu, melihat
+        kondisi masyarakat Neuron yang mengalami trauma berat baik secara psikis maupun fisik akibat perlakuan
+        Organisasi Stroke, Medika dan teman-temannya bertekad untuk mengembalikan kondisi masyarakat seperti sedia kala.
+        \n\nMemang, ini bukanlah pekerjaan yang mudah. Namun Medika dan teman-temannya yakin, dengan semangat dan kerja
+        keras, semua itu bisa terwujud.
+    </string>
     <string name="title_activity_gesture">Gesture</string>
     <string name="action_settings">Settings</string>
     <string name="soal1">5, 7, 10, 12, 15, seri selanjutnya...</string>

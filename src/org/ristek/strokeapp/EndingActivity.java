@@ -14,6 +14,9 @@ import android.widget.TextView;
 
 public class EndingActivity extends Activity {
 
+    Handler mHandler;
+    Runnable goToMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /* remove title bar and notification bar */
@@ -23,25 +26,26 @@ public class EndingActivity extends Activity {
         /* end remove title bar and notification bar */
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.opening_story);
-        TextView tv = (TextView) findViewById(R.id.content_opening);
+        setContentView(R.layout.ending_story);
+        TextView tv = (TextView) findViewById(R.id.content_ending);
 
         Scroller s = new Scroller(this, new LinearInterpolator());
         tv.setScroller(s);
         s.startScroll(0, 0, 0, 600, 30000);
 
-        final Handler mHandler = new Handler();
-        final Runnable goToMap = new Runnable() {
+        mHandler = new Handler();
+        goToMap = new Runnable() {
             @Override
             public void run() {
                 Intent intent = new Intent(EndingActivity.this,
-                        LevelSelector.class);
+                        MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         };
         mHandler.postDelayed(goToMap, 30000);
 
-        Button button = (Button) findViewById(R.id.buttonSkip);
+        Button button = (Button) findViewById(R.id.buttonSkipEnding);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,4 +56,9 @@ public class EndingActivity extends Activity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        mHandler.removeCallbacks(goToMap);
+        goToMap.run();
+    }
 }
