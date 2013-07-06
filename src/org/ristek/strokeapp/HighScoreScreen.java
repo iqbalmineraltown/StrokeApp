@@ -42,13 +42,17 @@ public class HighScoreScreen extends BaseStrokeClinicActivity {
         mScene = new Scene();
         mScene.setBackground(new SpriteBackground(new Sprite(0, 0,
                 getTR("hiscore-bg"), getVertexBufferObjectManager())));
+        mScene.attachChild(new Text(220, 180, mFont, "Petualangan:",
+                getVertexBufferObjectManager()));
+        mScene.attachChild(new Text(420, 180, mFont, "Tantangan Waktu:",
+                getVertexBufferObjectManager()));
         for (int i = 0; i < SaveManager.HIGHSCORE_COUNT; i++) {
-            mScene.attachChild(new Text(220, 180 + i * 50, mFont, (i + 1) + ". " + SaveManager.getHighScore(i),
+            mScene.attachChild(new Text(220, 220 + i * 50, mFont, (i + 1) + ". " + SaveManager.getHighScore(i),
                     getVertexBufferObjectManager()));
         }
 
         for (int i = 0; i < SaveManager.HIGHSCORE_COUNT; i++) {
-            mScene.attachChild(new Text(420, 180 + i * 50, mFont, (i + 1) + ". " +
+            mScene.attachChild(new Text(420, 220 + i * 50, mFont, (i + 1) + ". " +
                     ClockTimer.timeToString(SaveManager.getTimeHighScore(i), ClockTimer.HH_MM_SS),
                     getVertexBufferObjectManager()));
         }

@@ -38,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/delete"
+            android:background="@drawable/button"
             />
 
         <Button
@@ -45,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/finish"
-            />
+            android:background="@drawable/button"/>
 
     </LinearLayout>
 

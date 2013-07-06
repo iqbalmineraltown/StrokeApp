@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/story"
-   >
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/story"
+    >
 
     <ScrollView
         android:id="@+id/scroll_opening"
@@ -15,7 +14,7 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center" 
+            android:gravity="center"
             android:background="#55ffffff">
 
             <TextView
@@ -31,7 +30,7 @@
                 android:text="@string/opening_story"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
         </RelativeLayout>
     </ScrollView>
 
@@ -40,6 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Skip" />
+        android:text="Skip"
+        android:background="@drawable/button"/>
 
 </RelativeLayout>

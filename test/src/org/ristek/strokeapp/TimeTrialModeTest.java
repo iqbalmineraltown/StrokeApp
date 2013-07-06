@@ -55,7 +55,7 @@ public class TimeTrialModeTest extends ActivityInstrumentationTestCase2<MainActi
         solo.assertCurrentActivity("tidak masuk ke opening", OpeningActivity.class);
         solo.clickOnButton("Skip");
         solo.assertCurrentActivity("tidak masuk ke map", LevelSelector.class);
-        assertEquals("tidak berada dalam mode normal", GameMode.NORMAL, SaveManager.getMode());
+        assertEquals("tidak berada dalam mode time trial", GameMode.TIME_TRIAL, SaveManager.getMode());
         final int[] LEVEL_X = {99, 97, 225, 198, 174, 363, 469,
                 328, 672};
         final int[] LEVEL_Y = {357, 179, 84, 203, 295, 346, 252,

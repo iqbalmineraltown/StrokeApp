@@ -68,20 +68,22 @@ public class SaveManager {
         while (x < HIGHSCORE_COUNT && arr.get(x) >= score) {
             x++;
         }
-        long temp = arr.get(x);
-        arr.set(x, score);
-        for (int i = x + 1; i < HIGHSCORE_COUNT; i++) {
-            long temp2 = arr.get(i);
-            arr.set(i, temp);
-            temp = temp2;
-        }
-        for (int i = 0; i < HIGHSCORE_COUNT; i++) {
-            setHighScore(i, arr.get(i));
+        if (x < HIGHSCORE_COUNT) {
+            long temp = arr.get(x);
+            arr.set(x, score);
+            for (int i = x + 1; i < HIGHSCORE_COUNT; i++) {
+                long temp2 = arr.get(i);
+                arr.set(i, temp);
+                temp = temp2;
+            }
+            for (int i = 0; i < HIGHSCORE_COUNT; i++) {
+                setHighScore(i, arr.get(i));
+            }
         }
     }
 
     public static long getTotalTimeScore() {
-        return preference.getLong("currentTotalTimes", 0);
+        return preference.getLong("currentTotalTimeScore", 0);
     }
 
     public static void setTotalTimeScore(long value) {
@@ -107,21 +109,24 @@ public class SaveManager {
     public static void addTimeScoreToHighScore(long score) {
         List<Long> arr = new ArrayList<Long>(HIGHSCORE_COUNT);
         for (int i = 0; i < HIGHSCORE_COUNT; i++) {
-            arr.add(getHighScore(i));
+            arr.add(getTimeHighScore(i));
         }
         int x = 0;
         while (x < HIGHSCORE_COUNT && arr.get(x) <= score) {
             x++;
         }
-        long temp = arr.get(x);
-        arr.set(x, score);
-        for (int i = x + 1; i < HIGHSCORE_COUNT; i++) {
-            long temp2 = arr.get(i);
-            arr.set(i, temp);
-            temp = temp2;
-        }
-        for (int i = 0; i < HIGHSCORE_COUNT; i++) {
-            setTimeHighScore(i, arr.get(i));
+        if (x < HIGHSCORE_COUNT) {
+
+            long temp = arr.get(x);
+            arr.set(x, score);
+            for (int i = x + 1; i < HIGHSCORE_COUNT; i++) {
+                long temp2 = arr.get(i);
+                arr.set(i, temp);
+                temp = temp2;
+            }
+            for (int i = 0; i < HIGHSCORE_COUNT; i++) {
+                setTimeHighScore(i, arr.get(i));
+            }
         }
     }
 
