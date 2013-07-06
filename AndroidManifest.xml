@@ -43,6 +43,10 @@
             android:screenOrientation="landscape">
         </activity>
         <activity
+            android:name=".EndingActivity"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity
             android:name=".StrokeFact"
             android:label="Kisah Inspiratif"
             android:screenOrientation="landscape">
