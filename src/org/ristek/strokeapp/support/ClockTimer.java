@@ -6,10 +6,17 @@ import android.os.Handler;
 public class ClockTimer {
     private static final int REFRESH_RATE = 100;
 
-    public static String timeToString(long timemilis) {
+    public static final int MM_SS = 0;
+    public static final int HH_MM_SS = 1;
+
+    public static String timeToString(long timemilis, int type) {
         final long second = timemilis / 1000L;
         final long minute = second / 60L;
-        return String.format("%02d:%02d", minute, second % 60);
+        final long hour = minute / 60L;
+        if (type == MM_SS)
+            return String.format("%02d:%02d", minute, second % 60);
+        else
+            return String.format("%02d:%02d:%02d", hour, minute % 60, second % 60);
     }
 
     private long timeBefore;

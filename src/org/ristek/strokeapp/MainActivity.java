@@ -48,6 +48,10 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
     // Fields
     // ===========================================================
 
+    public Scene getmMenuScene() {
+        return mMenuScene;
+    }
+
     protected Scene mMenuScene;
 
     private Font mFont;
@@ -120,6 +124,12 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mMenuScene.hasChildScene()) mMenuScene.getChildScene().back();
+        else super.onBackPressed();
     }
 
     // ===========================================================
@@ -289,6 +299,7 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                     this.back();
                 }
                 if (resetText.contains(pX, pY)) {
+                    resetStatus = RESET_OPTIONS;
                     DialogFragment dialog = new ResetDialogFragment();
                     dialog.show(getFragmentManager(), "reset");
                 }

@@ -3,7 +3,7 @@ package org.ristek.strokeapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -34,8 +34,8 @@ public class LevelQuestion extends Activity implements ClockTimer.TimerListener 
     TextView timeText;
     private Button submitButton;
     private RadioButton[] questionButton;
-    private int questionId;
-    private static Question[] questionList;
+    public int questionId;
+    public static Question[] questionList;
     private ClockTimer timer;
 
     private String readInput(InputStream in) throws IOException {
@@ -87,7 +87,6 @@ public class LevelQuestion extends Activity implements ClockTimer.TimerListener 
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.question_page);
-        // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         questionText = (TextView) findViewById(R.id.textViewQuestion);
         questionButton = new RadioButton[5];
@@ -116,6 +115,7 @@ public class LevelQuestion extends Activity implements ClockTimer.TimerListener 
         if (questionId == 0) {
             Collections.shuffle(Arrays.asList(questionList));
         }
+        Log.d("LevelQuestion", "indeks jawaban: " + questionList[questionId].trueAnswer);
 
         questionText.setText(questionList[questionId].question);
         for (int i = 0; i < questionButton.length; i++) {
@@ -127,18 +127,11 @@ public class LevelQuestion extends Activity implements ClockTimer.TimerListener 
         else {
             timer = new ClockTimer(this);
             timer.setTimeLeft(QUESTION_TIME);
-            timeText.setText(ClockTimer.timeToString(QUESTION_TIME));
+            timeText.setText(ClockTimer.timeToString(QUESTION_TIME, ClockTimer.MM_SS));
             timer.start();
         }
 
         addListenerOnButton();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
     }
 
     public void addListenerOnButton() {
@@ -172,7 +165,7 @@ public class LevelQuestion extends Activity implements ClockTimer.TimerListener 
 
     @Override
     public void onTimerUpdate(long timeLeft) {
-        timeText.setText(ClockTimer.timeToString(timeLeft));
+        timeText.setText(ClockTimer.timeToString(timeLeft, ClockTimer.MM_SS));
         if (timeLeft == 0) {
             timer.stop();
             Intent resultIntent = new Intent();
@@ -202,10 +195,10 @@ public class LevelQuestion extends Activity implements ClockTimer.TimerListener 
     }
 
 
-    class Question {
-        String question;
-        String[] answer;
-        int trueAnswer;
+    public class Question {
+        public String question;
+        public String[] answer;
+        public int trueAnswer;
 
         Question(String question, String answer0, String answer1, String answer2,
                  String answer3, String answer4, int trueAnswer) {

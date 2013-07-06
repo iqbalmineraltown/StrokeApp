@@ -80,6 +80,51 @@ public class SaveManager {
         }
     }
 
+    public static long getTotalTimeScore() {
+        return preference.getLong("currentTotalTimes", 0);
+    }
+
+    public static void setTotalTimeScore(long value) {
+        Editor edit = preference.edit();
+        edit.putLong("currentTotalTimeScore", value);
+        edit.commit();
+    }
+
+    public static long getTimeHighScore(int highScoreIdx) {
+        return preference.getLong("timeHighScore" + highScoreIdx, 359999000);
+    }
+
+    public static void setTimeHighScore(int highScoreIdx, long score) {
+        Editor edit = preference.edit();
+        edit.putLong("timeHighScore" + highScoreIdx, score);
+        edit.commit();
+    }
+
+    public static void addTotalTimeScoreToHighScore() {
+        addTimeScoreToHighScore(getTotalTimeScore());
+    }
+
+    public static void addTimeScoreToHighScore(long score) {
+        List<Long> arr = new ArrayList<Long>(HIGHSCORE_COUNT);
+        for (int i = 0; i < HIGHSCORE_COUNT; i++) {
+            arr.add(getHighScore(i));
+        }
+        int x = 0;
+        while (x < HIGHSCORE_COUNT && arr.get(x) <= score) {
+            x++;
+        }
+        long temp = arr.get(x);
+        arr.set(x, score);
+        for (int i = x + 1; i < HIGHSCORE_COUNT; i++) {
+            long temp2 = arr.get(i);
+            arr.set(i, temp);
+            temp = temp2;
+        }
+        for (int i = 0; i < HIGHSCORE_COUNT; i++) {
+            setTimeHighScore(i, arr.get(i));
+        }
+    }
+
     public static int getMode() {
         return preference.getInt("currentMode", GameMode.NORMAL);
     }
@@ -93,6 +138,7 @@ public class SaveManager {
     public static void reset() {
         setCurrentLevel(1);
         setTotalScore(0);
+        setTotalTimeScore(0);
         setOption("Story", true);
     }
 }

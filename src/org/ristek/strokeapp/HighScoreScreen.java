@@ -10,6 +10,7 @@ import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.util.color.Color;
 import org.ristek.strokeapp.support.BaseStrokeClinicActivity;
+import org.ristek.strokeapp.support.ClockTimer;
 import org.ristek.strokeapp.support.SaveManager;
 
 
@@ -19,27 +20,9 @@ public class HighScoreScreen extends BaseStrokeClinicActivity {
 
     private Scene mScene;
     private Font mFont;
-//	private ITexture mFontTexture1;
-//	private ITexture mFontTexture2;
-//	private Font mFont1;
-//	private Font mFont2;
-//	private Text centerText;
-//	private Text back;
-    //private TextureRegion mRoundedRect;
-//	private Sprite mRect;
-
 
     @Override
     protected void onCreateResources() {
-//		FontFactory.setAssetBasePath("fonts/");
-
-
-//		mFontTexture1 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
-//		mFontTexture2 = new BitmapTextureAtlas(this.getTextureManager(), 256, 256,  TextureOptions.BILINEAR);
-//		mFont1 = FontFactory.createFromAsset(this.getFontManager(), mFontTexture1, this.getAssets(), "VintageOne.ttf", 32f, true, Color.BLACK);
-//		mFont2 = FontFactory.createFromAsset(this.getFontManager(), mFontTexture2, this.getAssets(), "VintageOne.ttf", 32f, true, Color.RED);
-//		this.mFont1.load();
-//		this.mFont2.load();
 
         this.createTextureAtlas(1024, 1024);
         this.loadTexture(textureName);
@@ -55,9 +38,7 @@ public class HighScoreScreen extends BaseStrokeClinicActivity {
 
     @Override
     protected Scene onCreateScene() {
-        // TODO Auto-generated method stub
-        //float pY = mCamera.getHeight()/2-mRoundedRect.getHeight()/2;
-        //float pX = mCamera.getWidth()/2-mRoundedRect.getWidth()/2;
+
         mScene = new Scene();
         mScene.setBackground(new SpriteBackground(new Sprite(0, 0,
                 getTR("hiscore-bg"), getVertexBufferObjectManager())));
@@ -65,32 +46,12 @@ public class HighScoreScreen extends BaseStrokeClinicActivity {
             mScene.attachChild(new Text(220, 180 + i * 50, mFont, (i + 1) + ". " + SaveManager.getHighScore(i),
                     getVertexBufferObjectManager()));
         }
-        //	this.centerText = new Text(300, 40, this.mFont1, " High Score ",
-        //		new TextOptions(HorizontalAlign.LEFT), this.getVertexBufferObjectManager());
-        //this.back = new Text(0, 0,
-        //		this.mFont2, "BACK",new TextOptions(HorizontalAlign.LEFT), this.getVertexBufferObjectManager()){
-//		
-//			@Override
-//			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-//					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-//				finish();
-//				
-//				return true;
-//			}
-//			
-//			
-//		};
 
-        //back.setPosition((mCamera.getWidth()/2)-back.getWidth()/2,
-        //	mCamera.getHeight()-back.getHeight()*2);
-        //mRect = new Sprite(pX,pY, mRoundedRect, getVertexBufferObjectManager());
-
-
-        //mScene.attachChild(centerText);
-        //mScene.attachChild(back);
-        //mScene.attachChild(mRect);
-        //mScene.registerTouchArea(back);
-
+        for (int i = 0; i < SaveManager.HIGHSCORE_COUNT; i++) {
+            mScene.attachChild(new Text(420, 180 + i * 50, mFont, (i + 1) + ". " +
+                    ClockTimer.timeToString(SaveManager.getTimeHighScore(i), ClockTimer.HH_MM_SS),
+                    getVertexBufferObjectManager()));
+        }
 
         return mScene;
     }

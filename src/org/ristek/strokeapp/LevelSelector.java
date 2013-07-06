@@ -2,7 +2,6 @@ package org.ristek.strokeapp;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.widget.Toast;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -65,11 +64,11 @@ public class LevelSelector extends BaseStrokeClinicActivity {
     private int trueAnswer;
     private int currentLevel;
     private long totalGestureScore;
+    private long totalTimeScore;
     int selection = -1;
 
     @Override
     protected void onCreateResources() {
-        // TODO Auto-generated method stub
         this.mFont = FontFactory.create(this.getFontManager(),
                 this.getTextureManager(), 256, 256,
                 Typeface.create(Typeface.DEFAULT, Typeface.ITALIC), 32);
@@ -110,13 +109,14 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 } else {
                     if (data.getBooleanExtra("QuestionResult", false))
                         trueAnswer++;
-                    this.showResultScreen(trueAnswer >= 3, trueAnswer * 25);
-                    gameState = STATE_LEVEL_SELECT;
-                    gameLevel = 0;
                     if (trueAnswer >= 3) {
                         updateLevel(currentLevel + 1);
                         SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25);
                     }
+                    this.showResultScreen(trueAnswer >= 3, trueAnswer * 25);
+                    gameState = STATE_LEVEL_SELECT;
+                    gameLevel = 0;
+
                 }
             } else {
                 this.showResultScreen(false, trueAnswer * 25);
@@ -136,8 +136,8 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                     gameLevel++;
                     createGestureLevel(gameLevel);
                 } else {
-                    this.showResultScreen(true, totalGestureScore);
                     SaveManager.setTotalScore(SaveManager.getTotalScore() + totalGestureScore);
+                    this.showResultScreen(true, totalGestureScore);
                     gameState = STATE_LEVEL_SELECT;
                     gameLevel = 0;
                     updateLevel(currentLevel + 1);
@@ -161,33 +161,31 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 } else {
                     long currentScore = (long) (data.getDoubleExtra(
                             "gestureScore", 0) * 10);
-                    totalGestureScore += currentScore;
-
                     if (data.getBooleanExtra("gestureResult", false)) {
-                        if (gameLevel < 6) {
-                            gameLevel++;
-                            createGestureLevel(gameLevel);
-                        } else {
-                            Intent intent = new Intent(LevelSelector.this, LevelResult.class);
-                            intent.putExtra("Win", trueAnswer == 3);
-                            intent.putExtra("Score", trueAnswer * 25 + totalGestureScore);
-                            startActivityForResult(intent, FINAL_RESULT_REQUEST);
-                            if (trueAnswer == 3) {
-                                SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25 + totalGestureScore);
-                            }
+                        totalGestureScore += currentScore;
+                        trueAnswer++;
+                    }
 
-                            gameState = STATE_LEVEL_SELECT;
-                            gameLevel = 0;
-                        }
+                    if (gameLevel < 6) {
+                        gameLevel++;
+                        createGestureLevel(gameLevel);
                     } else {
-                        this.showResultScreen(false, trueAnswer * 25 + totalGestureScore);
+                        Intent intent = new Intent(LevelSelector.this, LevelResult.class);
+                        intent.putExtra("Win", trueAnswer == 6);
+                        intent.putExtra("Score", (trueAnswer) * 30 + totalGestureScore);
+                        startActivityForResult(intent, FINAL_RESULT_REQUEST);
+                        if (trueAnswer == 6) {
+                            SaveManager.setTotalScore(SaveManager.getTotalScore() +
+                                    (trueAnswer) * 30 + totalGestureScore);
+                        }
+
                         gameState = STATE_LEVEL_SELECT;
                         gameLevel = 0;
                     }
+
                 }
             } else {
-                Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
-                        .show();
+                this.showResultScreen(false, trueAnswer * 30 + totalGestureScore);
                 gameState = STATE_LEVEL_SELECT;
                 gameLevel = 0;
             }
@@ -196,7 +194,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
 
     protected void onActivityResultTimed(int requestCode, int resultCode, Intent data) {
         if (requestCode == FINAL_RESULT_REQUEST) {
-            SaveManager.addTotalScoreToHighScore();
+            SaveManager.addTotalTimeScoreToHighScore();
             SaveManager.reset();
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -206,6 +204,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         if (gameState == STATE_QUESTION_LEVEL) {
             if (requestCode == QUESTION_ACTIVITY_REQUEST
                     && resultCode == RESULT_OK) {
+                totalTimeScore += data.getLongExtra("time", 0);
                 if (gameLevel < 5) {
                     gameLevel++;
                     if (data.getBooleanExtra("QuestionResult", false))
@@ -214,16 +213,17 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 } else {
                     if (data.getBooleanExtra("QuestionResult", false))
                         trueAnswer++;
-                    this.showResultScreen(trueAnswer >= 3, trueAnswer * 25);
-                    gameState = STATE_LEVEL_SELECT;
-                    gameLevel = 0;
                     if (trueAnswer >= 3) {
                         updateLevel(currentLevel + 1);
-                        SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25);
+                        SaveManager.setTotalTimeScore(SaveManager.getTotalTimeScore() + totalTimeScore);
                     }
+                    this.showResultScreen(trueAnswer >= 3, totalTimeScore);
+                    gameState = STATE_LEVEL_SELECT;
+                    gameLevel = 0;
+
                 }
             } else {
-                this.showResultScreen(false, trueAnswer * 25);
+                this.showResultScreen(false, totalTimeScore);
                 gameState = STATE_LEVEL_SELECT;
                 gameLevel = 0;
             }
@@ -231,31 +231,35 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         if (gameState == STATE_GESTURE_LEVEL) {
             if (requestCode == GESTURE_ACTIVITY_REQUEST
                     && resultCode == RESULT_OK
-                    && data.getBooleanExtra("gestureResult", false)) {
+                    ) {
                 long currentScore = (long) (data.getDoubleExtra("gestureScore",
                         0) * 10);
+
+                if (data.getBooleanExtra("gestureResult", false)) trueAnswer++;
+                totalTimeScore += data.getLongExtra("time", 0);
                 totalGestureScore += currentScore;
 
                 if (gameLevel < 3) {
-                    Toast.makeText(this,
-                            "Hasil : Benar, Score:" + currentScore,
-                            Toast.LENGTH_SHORT).show();
                     gameLevel++;
                     createGestureLevel(gameLevel);
                 } else {
-                    this.showResultScreen(true, totalGestureScore);
-                    SaveManager.setTotalScore(SaveManager.getTotalScore() + totalGestureScore);
+                    if (trueAnswer == 3) {
+                        updateLevel(currentLevel + 1);
+                        SaveManager.setTotalTimeScore(SaveManager.getTotalTimeScore() + totalTimeScore);
+                    }
+                    this.showResultScreen(trueAnswer == 3, totalTimeScore);
+
                     gameState = STATE_LEVEL_SELECT;
                     gameLevel = 0;
-                    updateLevel(currentLevel + 1);
                 }
             } else {
-                this.showResultScreen(false, totalGestureScore);
+                this.showResultScreen(false, totalTimeScore);
                 gameState = STATE_LEVEL_SELECT;
                 gameLevel = 0;
             }
         } else if (gameState == STATE_FINAL_LEVEL) {
             if (resultCode == RESULT_OK) {
+                totalTimeScore += data.getLongExtra("time", 0);
                 if (gameLevel <= 3) {
                     gameLevel++;
                     if (data.getBooleanExtra("QuestionResult", false)) {
@@ -268,33 +272,30 @@ public class LevelSelector extends BaseStrokeClinicActivity {
                 } else {
                     long currentScore = (long) (data.getDoubleExtra(
                             "gestureScore", 0) * 10);
-                    totalGestureScore += currentScore;
-
                     if (data.getBooleanExtra("gestureResult", false)) {
-                        if (gameLevel < 6) {
-                            gameLevel++;
-                            createGestureLevel(gameLevel);
-                        } else {
-                            Intent intent = new Intent(LevelSelector.this, LevelResult.class);
-                            intent.putExtra("Win", trueAnswer == 3);
-                            intent.putExtra("Score", trueAnswer * 25 + totalGestureScore);
-                            startActivityForResult(intent, FINAL_RESULT_REQUEST);
-                            if (trueAnswer == 3) {
-                                SaveManager.setTotalScore(SaveManager.getTotalScore() + trueAnswer * 25 + totalGestureScore);
-                            }
+                        totalGestureScore += currentScore;
+                        trueAnswer++;
+                    }
 
-                            gameState = STATE_LEVEL_SELECT;
-                            gameLevel = 0;
-                        }
+                    if (gameLevel < 6) {
+                        gameLevel++;
+                        createGestureLevel(gameLevel);
                     } else {
-                        this.showResultScreen(false, trueAnswer * 25 + totalGestureScore);
+                        Intent intent = new Intent(LevelSelector.this, LevelResult.class);
+                        intent.putExtra("Win", trueAnswer == 6);
+                        intent.putExtra("Score", totalTimeScore);
+                        startActivityForResult(intent, FINAL_RESULT_REQUEST);
+                        if (trueAnswer == 6) {
+                            SaveManager.setTotalTimeScore(SaveManager.getTotalTimeScore() +
+                                    totalTimeScore);
+                        }
+
                         gameState = STATE_LEVEL_SELECT;
                         gameLevel = 0;
                     }
                 }
             } else {
-                Toast.makeText(this, "Hasil : Salah", Toast.LENGTH_SHORT)
-                        .show();
+                this.showResultScreen(false, totalTimeScore);
                 gameState = STATE_LEVEL_SELECT;
                 gameLevel = 0;
             }
@@ -322,7 +323,6 @@ public class LevelSelector extends BaseStrokeClinicActivity {
 
     @Override
     protected Scene onCreateScene() {
-        // TODO Auto-generated method stub
         gameState = STATE_LEVEL_SELECT;
         currentLevel = SaveManager.getCurrentLevel();
         this.mEngine.registerUpdateHandler(new FPSLogger());
@@ -369,25 +369,22 @@ public class LevelSelector extends BaseStrokeClinicActivity {
             for (int i = 0; i < arrPost.length; i++) {
                 if (selection == i) {
                     selection = -1;
+                    gameLevel = 1;
+                    totalGestureScore = 0;
+                    totalTimeScore = 0;
+                    trueAnswer = 0;
                     if (i < 5) {
                         // Jika bagian pertanyaan
                         gameState = STATE_QUESTION_LEVEL;
-                        gameLevel = 1;
-                        trueAnswer = 0;
                         createQuestionLevel(gameLevel - 1);
                     } else if (i < 8) {
                         // Jika bagian gesture
                         Collections.shuffle(Arrays.asList(gestureName));
                         gameState = STATE_GESTURE_LEVEL;
-                        gameLevel = 1;
-                        totalGestureScore = 0;
                         createGestureLevel(gameLevel);
                     } else {
                         Collections.shuffle(Arrays.asList(gestureName));
                         gameState = STATE_FINAL_LEVEL;
-                        gameLevel = 1;
-                        totalGestureScore = 0;
-                        trueAnswer = 0;
                         createQuestionLevel(gameLevel - 1);
                     }
 

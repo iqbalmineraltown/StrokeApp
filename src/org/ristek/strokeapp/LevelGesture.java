@@ -23,7 +23,9 @@ public class LevelGesture extends Activity {
     private static final double MINIMAL_GESTURE_SCORE = 4.0;
     private static final long GESTURE_TIME = 60000;
 
+    public static boolean onTest = false;
     GestureLibrary gestureLib;
+    GestureOverlayView gestureOverlay;
     String gestureName;
     ClockTimer timer;
     TextView timeText;
@@ -43,6 +45,7 @@ public class LevelGesture extends Activity {
         gestureLib.load();
 
         setContentView(R.layout.activity_gesture);
+        gestureOverlay = (GestureOverlayView) findViewById(R.id.gestureOverlayView1);
         ImageView image = (ImageView) findViewById(R.id.imageView1);
         Bitmap gestureImage = gestureLib.getGestures(gestureName).get(0)
                 .toBitmap(400, 240, 20, 100, Color.RED);
@@ -56,7 +59,7 @@ public class LevelGesture extends Activity {
         else {
             timer = new ClockTimer(onTimerUpdate);
             timer.setTimeLeft(GESTURE_TIME);
-            timeText.setText(ClockTimer.timeToString(GESTURE_TIME));
+            timeText.setText(ClockTimer.timeToString(GESTURE_TIME, ClockTimer.MM_SS));
             timer.start();
         }
 
@@ -76,7 +79,6 @@ public class LevelGesture extends Activity {
             GestureOverlayView gestureOverlay = (GestureOverlayView) findViewById(R.id.gestureOverlayView1);
             Gesture input = gestureOverlay.getGesture();
             Gesture emptyGesture = new Gesture();
-            //gestureOverlay.setGesture(emptyGesture);
             ArrayList<Prediction> pres = null;
             if (input != null && !input.equals(emptyGesture) && input.getStrokesCount() > 0) {
                 pres = gestureLib.recognize(input);
@@ -85,12 +87,14 @@ public class LevelGesture extends Activity {
             double score = 0;
             if (pres != null) for (Prediction pre : pres) {
                 if (pre.name.equals(gestureName)) {
-                    System.out.println();
-                    if (pre.score >= MINIMAL_GESTURE_SCORE)
+                    if (pre.score >= MINIMAL_GESTURE_SCORE) {
                         result = true;
-                    score = pre.score;
+                        score = pre.score;
+                    }
                 }
             }
+            if (onTest) result = true;
+
             Intent returnIntent = new Intent();
             returnIntent.putExtra("gestureResult", result);
             returnIntent.putExtra("gestureScore", score);
@@ -104,7 +108,7 @@ public class LevelGesture extends Activity {
     private ClockTimer.TimerListener onTimerUpdate = new ClockTimer.TimerListener() {
         @Override
         public void onTimerUpdate(long timeLeft) {
-            timeText.setText(ClockTimer.timeToString(timeLeft));
+            timeText.setText(ClockTimer.timeToString(timeLeft, ClockTimer.MM_SS));
             if (timeLeft == 0) {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("gestureResult", false);
