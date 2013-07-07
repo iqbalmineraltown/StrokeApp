@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component jdk="Android 4.2.2 Platform" jdk_type="Android SDK">
+<component inheritJdk="true">
 	<exclude-output/>
-	<contentEntry url="file://$MODULE_DIR$"/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<excludeFolder url="file://$MODULE_DIR$/test"/>
+	</contentEntry>
 	<lib name="andengine.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/libs/andengine.jar!/"/>
 	</lib>

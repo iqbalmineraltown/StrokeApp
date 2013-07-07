@@ -1,11 +1,8 @@
 package org.ristek.strokeapp;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Typeface;
-
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -23,9 +20,10 @@ import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
 import org.ristek.strokeapp.support.BaseStrokeClinicActivity;
 import org.ristek.strokeapp.support.GameMode;
+import org.ristek.strokeapp.support.ResetDialogFragment;
 import org.ristek.strokeapp.support.SaveManager;
 
-public class MainActivity extends BaseStrokeClinicActivity {
+public class MainActivity extends BaseStrokeClinicActivity implements ResetDialogFragment.ResetDialogListener {
 
     // ===========================================================
     // Constants
@@ -113,6 +111,7 @@ public class MainActivity extends BaseStrokeClinicActivity {
         return mMenuScene;
     }
 
+    @Override
     public void onResetDone() {
         if (resetStatus == RESET_OPTIONS)
             ((MainMenuScene) mMenuScene).resetGame();
@@ -127,27 +126,6 @@ public class MainActivity extends BaseStrokeClinicActivity {
         }
     }
 
-    @Override
-    public Dialog onCreateDialog(int id) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.reset_message)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        SaveManager.reset();
-                        MainActivity.this.onResetDone();
-                        dialogInterface.dismiss();
-                    }
-                })
-                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    	dialogInterface.dismiss();
-                    }
-                });
-        return builder.create();
-    }
-    
     @Override
     public void onBackPressed() {
         if (mMenuScene.hasChildScene()) mMenuScene.getChildScene().back();
@@ -216,7 +194,8 @@ public class MainActivity extends BaseStrokeClinicActivity {
                                 startActivity(intent);
                             } else if (SaveManager.getMode() == GameMode.TIME_TRIAL) {
                                 resetStatus = RESET_NORMAL;
-                                MainActivity.this.showDialog(0);
+                                DialogFragment dialog = new ResetDialogFragment();
+                                dialog.show(getFragmentManager(), "reset");
                             } else {
                                 Intent intent = new Intent(MainActivity.this,
                                         LevelSelector.class);
@@ -232,7 +211,8 @@ public class MainActivity extends BaseStrokeClinicActivity {
                                 startActivity(intent);
                             } else if (SaveManager.getMode() == GameMode.NORMAL) {
                                 resetStatus = RESET_TIME;
-                                MainActivity.this.showDialog(0);
+                                DialogFragment dialog = new ResetDialogFragment();
+                                dialog.show(getFragmentManager(), "reset");
                             } else {
                                 Intent intent = new Intent(MainActivity.this,
                                         LevelSelector.class);
@@ -320,7 +300,8 @@ public class MainActivity extends BaseStrokeClinicActivity {
                 }
                 if (resetText.contains(pX, pY)) {
                     resetStatus = RESET_OPTIONS;
-                    MainActivity.this.showDialog(0);
+                    DialogFragment dialog = new ResetDialogFragment();
+                    dialog.show(getFragmentManager(), "reset");
                 }
             }
             return true;
