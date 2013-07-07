@@ -1,8 +1,8 @@
 package org.ristek.strokeapp;
 
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.v4.app.DialogFragment;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -195,7 +195,7 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                             } else if (SaveManager.getMode() == GameMode.TIME_TRIAL) {
                                 resetStatus = RESET_NORMAL;
                                 DialogFragment dialog = new ResetDialogFragment();
-                                dialog.show(getFragmentManager(), "reset");
+                                dialog.show(getSupportFragmentManager(), "reset");
                             } else {
                                 Intent intent = new Intent(MainActivity.this,
                                         LevelSelector.class);
@@ -212,7 +212,7 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                             } else if (SaveManager.getMode() == GameMode.NORMAL) {
                                 resetStatus = RESET_TIME;
                                 DialogFragment dialog = new ResetDialogFragment();
-                                dialog.show(getFragmentManager(), "reset");
+                                dialog.show(getSupportFragmentManager(), "reset");
                             } else {
                                 Intent intent = new Intent(MainActivity.this,
                                         LevelSelector.class);
@@ -301,7 +301,7 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                 if (resetText.contains(pX, pY)) {
                     resetStatus = RESET_OPTIONS;
                     DialogFragment dialog = new ResetDialogFragment();
-                    dialog.show(getFragmentManager(), "reset");
+                    dialog.show(getSupportFragmentManager(), "reset");
                 }
             }
             return true;
