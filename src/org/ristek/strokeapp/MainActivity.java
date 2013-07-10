@@ -3,6 +3,8 @@ package org.ristek.strokeapp;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v4.app.DialogFragment;
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -22,6 +24,8 @@ import org.ristek.strokeapp.support.BaseStrokeClinicActivity;
 import org.ristek.strokeapp.support.GameMode;
 import org.ristek.strokeapp.support.ResetDialogFragment;
 import org.ristek.strokeapp.support.SaveManager;
+
+import java.io.IOException;
 
 public class MainActivity extends BaseStrokeClinicActivity implements ResetDialogFragment.ResetDialogListener {
 
@@ -55,7 +59,7 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
     protected Scene mMenuScene;
 
     private Font mFont;
-
+    private Music bgMusic;
     private int resetStatus;
     // private Music bgMusic;
 
@@ -91,13 +95,14 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
         this.buildTextureAtlas();
 
         // Load Music
-        // try {
-        // bgMusic = MusicFactory.createMusicFromAsset(
-        // mEngine.getMusicManager(), this, "music/test-music.ogg");
-        // bgMusic.setLooping(true);
-        // } catch (IOException e) {
-        // e.printStackTrace();
-        // }
+        try {
+            bgMusic = MusicFactory.createMusicFromAsset(
+                    mEngine.getMusicManager(), this, "music/bg.mp3");
+            bgMusic.setLooping(true);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -106,7 +111,7 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
 
         SaveManager.loadPreferences(getSharedPreferences("StrokeApp",
                 MODE_PRIVATE));
-
+        if (SaveManager.getOption("Sound")) bgMusic.play();
         mMenuScene = new MainMenuScene();
         return mMenuScene;
     }
@@ -116,6 +121,8 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
         if (resetStatus == RESET_OPTIONS)
             ((MainMenuScene) mMenuScene).resetGame();
         else {
+            bgMusic.seekTo(0);
+            bgMusic.pause();
             SaveManager.reset();
             SaveManager.setMode(resetStatus - 1);
             SaveManager.setOption("Story", false);
@@ -123,6 +130,14 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                     OpeningActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
+        }
+    }
+
+    @Override
+    protected synchronized void onResume() {
+        super.onResume();
+        if (bgMusic != null && SaveManager.getOption("Sound")) {
+            bgMusic.play();
         }
     }
 
@@ -186,6 +201,8 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
 
                         if (i == MENU_START) {
                             if (SaveManager.getOption("Story")) {
+                                bgMusic.seekTo(0);
+                                bgMusic.pause();
                                 SaveManager.setMode(GameMode.NORMAL);
                                 SaveManager.setOption("Story", false);
                                 Intent intent = new Intent(MainActivity.this,
@@ -197,12 +214,17 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                                 DialogFragment dialog = new ResetDialogFragment();
                                 dialog.show(getSupportFragmentManager(), "reset");
                             } else {
+                                bgMusic.seekTo(0);
+                                bgMusic.pause();
                                 Intent intent = new Intent(MainActivity.this,
-                                        LevelSelector.class);
+                                        ExerciseActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                                 startActivity(intent);
                             }
                         } else if (i == MENU_TIME_TRIAL) {
                             if (SaveManager.getOption("Story")) {
+                                bgMusic.seekTo(0);
+                                bgMusic.pause();
                                 SaveManager.setMode(GameMode.TIME_TRIAL);
                                 SaveManager.setOption("Story", false);
                                 Intent intent = new Intent(MainActivity.this,
@@ -214,8 +236,11 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                                 DialogFragment dialog = new ResetDialogFragment();
                                 dialog.show(getSupportFragmentManager(), "reset");
                             } else {
+                                bgMusic.seekTo(0);
+                                bgMusic.pause();
                                 Intent intent = new Intent(MainActivity.this,
-                                        LevelSelector.class);
+                                        ExerciseActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                                 startActivity(intent);
                             }
                         } else if (i == MENU_HIGH_SCORE) {
@@ -287,10 +312,11 @@ public class MainActivity extends BaseStrokeClinicActivity implements ResetDialo
                             !SaveManager.getOption("Sound"));
                     if (SaveManager.getOption("Sound")) {
                         soundOption.setText("Suara : Hidup");
-                        // bgMusic.play();
+                        bgMusic.seekTo(0);
+                        bgMusic.play();
                     } else {
                         soundOption.setText("Suara : Mati");
-                        // bgMusic.pause();
+                        bgMusic.pause();
                     }
 
                 }

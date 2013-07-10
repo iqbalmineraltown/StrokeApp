@@ -23,8 +23,6 @@ public class NormalModeTest extends StrokeClinicTestBase {
     public void testNormal() throws Exception {
         this.clickOnScreen(250, 285); // klik ke petualangan
         solo.assertCurrentActivity("tidak masuk ke opening", OpeningActivity.class);
-        solo.clickOnButton("Skip");
-        solo.assertCurrentActivity("tidak masuk ke map", LevelSelector.class);
         assertEquals("tidak berada dalam mode normal", GameMode.NORMAL, SaveManager.getMode());
         this.playUntilEnding();
 

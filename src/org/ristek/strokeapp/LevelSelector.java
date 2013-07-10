@@ -2,6 +2,8 @@ package org.ristek.strokeapp;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.SpriteBackground;
 import org.andengine.entity.sprite.Sprite;
@@ -13,6 +15,7 @@ import org.ristek.strokeapp.support.BaseStrokeClinicActivity;
 import org.ristek.strokeapp.support.GameMode;
 import org.ristek.strokeapp.support.SaveManager;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -23,8 +26,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
     // ===========================================================
 
     private static final String[] textureName = {"map", "i-pos", "i-pos-off",
-            "i-pass", "i-1", "i-2", "i-3", "i-4", "i-5", "i-6", "i-7", "i-8",
-            "i-level1", "i-level2", "i-level3"};
+            "i-pass", "i-1", "i-2", "i-3", "i-4", "i-5", "i-6", "i-7", "i-8"};
 
     private static final String[] gestureName = {"Ga", "Pa", "Da", "Ca", "Ya",
             "Ta", "Ja", "Wa", "Ka", "Dha", "Ha", "Ma", "Sa", "Na", "Ra", "La"};
@@ -48,6 +50,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
     private static final int STATE_QUESTION_LEVEL = 1;
     private static final int STATE_GESTURE_LEVEL = 2;
     private static final int STATE_FINAL_LEVEL = 3;
+    private static final int STATE_FINAL = 4;
 
     // ===========================================================
     // Fields
@@ -61,11 +64,14 @@ public class LevelSelector extends BaseStrokeClinicActivity {
     protected Font mFont;
     private int gameState;
     private int gameLevel;
+    private int m;
     private int trueAnswer;
     private int currentLevel;
     private long totalGestureScore;
     private long totalTimeScore;
+    private Music bgMusic;
     int selection = -1;
+
 
     @Override
     protected void onCreateResources() {
@@ -78,6 +84,16 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         this.loadTexture(textureName);
         this.buildTextureAtlas();
 
+        // Load Music
+        try {
+            bgMusic = MusicFactory.createMusicFromAsset(
+                    mEngine.getMusicManager(), this, "music/bg.mp3");
+            bgMusic.setLooping(true);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -89,10 +105,30 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         }
     }
 
+    @Override
+    protected synchronized void onResume() {
+        super.onResume();
+        if (bgMusic != null && (gameState == STATE_LEVEL_SELECT || gameState == STATE_FINAL) && m > 0) {
+            if (SaveManager.getOption("Sound")) bgMusic.play();
+        }
+        m++;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (bgMusic != null && gameState != STATE_FINAL) {
+            bgMusic.pause();
+        }
+    }
+
     protected void onActivityResultNormal(int requestCode, int resultCode, Intent data) {
+        m = 0;
         if (requestCode == FINAL_RESULT_REQUEST) {
+            m = 1;
             SaveManager.addTotalScoreToHighScore();
             SaveManager.reset();
+            gameState = STATE_FINAL;
             Intent intent = new Intent(this, EndingActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -323,6 +359,7 @@ public class LevelSelector extends BaseStrokeClinicActivity {
 
     @Override
     protected Scene onCreateScene() {
+        if (SaveManager.getOption("Sound")) bgMusic.play();
         gameState = STATE_LEVEL_SELECT;
         currentLevel = SaveManager.getCurrentLevel();
         this.mEngine.registerUpdateHandler(new FPSLogger());
@@ -368,6 +405,8 @@ public class LevelSelector extends BaseStrokeClinicActivity {
         } else if (pSceneTouchEvent.isActionUp()) {
             for (int i = 0; i < arrPost.length; i++) {
                 if (selection == i) {
+                    bgMusic.seekTo(0);
+                    bgMusic.pause();
                     selection = -1;
                     gameLevel = 1;
                     totalGestureScore = 0;

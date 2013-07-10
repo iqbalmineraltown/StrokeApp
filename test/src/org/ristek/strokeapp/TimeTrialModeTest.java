@@ -23,8 +23,6 @@ public class TimeTrialModeTest extends StrokeClinicTestBase {
     public void testTimeTrial() throws Exception {
         this.clickOnScreen(467, 290); // klik ke time trial
         solo.assertCurrentActivity("tidak masuk ke opening", OpeningActivity.class);
-        solo.clickOnButton("Skip");
-        solo.assertCurrentActivity("tidak masuk ke map", LevelSelector.class);
         assertEquals("tidak berada dalam mode time trial", GameMode.TIME_TRIAL, SaveManager.getMode());
         this.playUntilEnding();
     }

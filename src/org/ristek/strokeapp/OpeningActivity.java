@@ -37,7 +37,8 @@ public class OpeningActivity extends Activity {
             @Override
             public void run() {
                 Intent intent = new Intent(OpeningActivity.this,
-                        LevelSelector.class);
+                        ExerciseActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
         };

@@ -40,6 +40,10 @@ public abstract class StrokeClinicTestBase extends ActivityInstrumentationTestCa
     }
 
     public void playUntilEnding() {
+        solo.clickOnButton("Skip");
+        solo.assertCurrentActivity("tidak masuk ke pemanasan", ExerciseActivity.class);
+        solo.waitForActivity(LevelSelector.class, 100000);
+        solo.assertCurrentActivity("tidak masuk ke map", LevelSelector.class);
         final int[] LEVEL_X = {99, 97, 225, 198, 174, 363, 469,
                 328, 672};
         final int[] LEVEL_Y = {357, 179, 84, 203, 295, 346, 252,
