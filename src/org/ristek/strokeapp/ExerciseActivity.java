@@ -45,6 +45,7 @@ public class ExerciseActivity extends BaseStrokeClinicActivity {
             public boolean onSceneTouchEvent(Scene scene, TouchEvent touchEvent) {
                 Intent intent = new Intent(ExerciseActivity.this,
                         LevelSelector.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
             }
@@ -72,6 +73,7 @@ public class ExerciseActivity extends BaseStrokeClinicActivity {
                 else {
                     Intent intent = new Intent(ExerciseActivity.this,
                             LevelSelector.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
             }
